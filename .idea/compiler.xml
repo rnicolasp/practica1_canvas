@@ -9,5 +9,8 @@
         <module name="jspDEMO" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="canvas_paint" target="9" />
+    </bytecodeTargetLevel>
   </component>
 </project>

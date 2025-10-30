@@ -1,6 +1,7 @@
-package com.liceu.servlets.controllers;
+package com.paint.servlets.controllers;
 
-import com.liceu.servlets.DAOS.UserDAO;
+import com.paint.servlets.DAOS.UserDAO;
+import com.paint.servlets.models.User;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,28 +11,28 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-@WebServlet("/login")
-public class LoginController  extends HttpServlet {
+@WebServlet("/register")
+public class RegisterController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("WEB-INF/jsp/login.jsp")
+        HttpSession session = req.getSession();
+        session.invalidate();
+        req.getRequestDispatcher("WEB-INF/jsp/register.jsp")
                 .forward(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String name = req.getParameter("name");
         String user = req.getParameter("user");
         String password = req.getParameter("password");
         UserDAO userDAO = new UserDAO();
-        boolean userExists = userDAO.CheckUser(user, password);
+        boolean userExists = userDAO.userExists(user);
         if (userExists) {
-            HttpSession session = req.getSession();
-            session.setAttribute("user", user);
-
-            resp.sendRedirect("/private");
+            req.setAttribute("message","User already exists");
             return;
         } else {
-            req.setAttribute("message","Username or password invalid");
+            UserDAO.registerUser(name,user,password);
         }
 
         req.getRequestDispatcher("WEB-INF/jsp/login.jsp")
