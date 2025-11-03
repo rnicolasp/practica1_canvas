@@ -16,7 +16,7 @@
 
       <div class="actions center">
         <a href="/canvas"><button>Create new canvas</button></a>
-        <a href="/"><button>Home</button></a>
+        <a href="/home"><button>Home</button></a>
       </div>
     </div>
   </div>

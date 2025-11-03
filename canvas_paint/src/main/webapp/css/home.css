@@ -47,6 +47,17 @@ input[type="number"], input[type="text"], input[type="password"], select {
 
 .canvas-wrap { border: 1px solid #ccc; display:inline-block; }
 
+.canvas-area { display:flex; gap:16px; align-items:flex-start; flex-wrap:nowrap; }
+.canvas-area > div:first-child { flex: 1; }
+.sidebar { width: 300px; display:flex; flex-direction:column; }
+.sidebar .card { display:flex; flex-direction:column; }
+.sidebar .form-column { max-width: none; margin: 0; }
+.object-list { list-style:none; padding:0 6px; margin:0; max-height:420px; overflow:auto; flex:1; }
+.object-item { display:flex; justify-content:space-between; align-items:center; padding:6px 4px; border-bottom:1px solid #eee; }
+.object-left { display:flex; flex-direction:column; }
+.object-right button { margin-left:6px; }
+.object-name input { width:160px; }
+
 .small-muted { color: #666; font-size: 0.9em }
 
 .center { text-align: center }

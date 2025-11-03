@@ -16,7 +16,7 @@
       <div>
         <c:choose>
           <c:when test="${not empty sessionScope.user}">
-            <p class="small-muted">Welcome, <strong>${sessionScope.user}</strong></p>
+            <p class="small-muted">Welcome, <strong>${sessionScope.name}</strong></p>
             <div class="actions center">
               <a href="/profile"><button>My profile</button></a>
               <a href="/canvas"><button>Create new canvas</button></a>

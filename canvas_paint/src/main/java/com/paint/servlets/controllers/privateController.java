@@ -6,6 +6,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import com.paint.servlets.DAOS.UserDAO;
+
 import java.io.IOException;
 
 @WebServlet("/home")
@@ -18,6 +21,8 @@ public class privateController extends HttpServlet {
             resp.sendRedirect("/login");
             return;
         }
+        String name = UserDAO.getName(user);
+        req.setAttribute("name", name);
         req.setAttribute("user", user);
         req.getRequestDispatcher("WEB-INF/jsp/home.jsp")
                 .forward(req, resp);
