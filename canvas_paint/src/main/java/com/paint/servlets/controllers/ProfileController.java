@@ -22,11 +22,26 @@ public class ProfileController extends HttpServlet {
         }
         String name = UserDAO.getName(user);
 
-        // Placeholder stats - in a real app these would come from a database/service
         req.setAttribute("name", name);
         req.setAttribute("user", user);
-        //req.setAttribute("canvasesCreated", 3);
-        //req.setAttribute("memberSince", "2023-01-01");
+
+        // list saved canvas files for this user (if any)
+        try {
+            String userHome = System.getProperty("user.home");
+            java.nio.file.Path base = java.nio.file.Paths.get(userHome, "canvas_paint_saves", user);
+            java.util.List<String> saves = new java.util.ArrayList<>();
+            if (java.nio.file.Files.exists(base)) {
+                java.io.File[] files = base.toFile().listFiles((d, name1) -> name1.endsWith(".json"));
+                if (files != null) {
+                    java.util.Arrays.sort(files, (a,b) -> Long.compare(b.lastModified(), a.lastModified()));
+                    for (java.io.File f : files) saves.add(f.getName());
+                }
+            }
+            req.setAttribute("saves", saves);
+        } catch (Exception ex) {
+            // ignore listing errors
+            req.setAttribute("saves", java.util.Collections.emptyList());
+        }
 
         req.getRequestDispatcher("WEB-INF/jsp/profile.jsp").forward(req, resp);
     }

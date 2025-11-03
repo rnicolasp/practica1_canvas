@@ -16,9 +16,6 @@
       <div class="actions">
         <a href="/login"><button>Login</button></a>
         <a href="/register"><button>Register</button></a>
-        <form method="post" action="/logout" style="display:inline;margin:0">
-          <button type="submit">Clear session</button>
-        </form>
       </div>
     </div>
   </div>

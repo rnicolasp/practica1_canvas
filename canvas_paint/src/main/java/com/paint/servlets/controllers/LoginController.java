@@ -24,14 +24,16 @@ public class LoginController  extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String user = req.getParameter("user");
         String password = req.getParameter("password");
+
         UserDAO userDAO = new UserDAO();
+
         boolean userExists = userDAO.checkUser(user, password);
         if (userExists) {
             HttpSession session = req.getSession();
             session.setAttribute("user", user);
-
             resp.sendRedirect("/home");
             return;
+
         } else {
             req.setAttribute("message","Username or password invalid");
         }

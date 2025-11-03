@@ -23,12 +23,6 @@ public class CanvasController extends HttpServlet {
 
         int width = 800;
         int height = 600;
-        try {
-            if (ws != null) width = Integer.parseInt(ws);
-            if (hs != null) height = Integer.parseInt(hs);
-        } catch (NumberFormatException e) {
-            // keep defaults
-        }
 
         req.setAttribute("width", width);
         req.setAttribute("height", height);

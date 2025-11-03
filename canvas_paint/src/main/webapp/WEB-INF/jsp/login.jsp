@@ -23,9 +23,11 @@
                 </label>
 
                 <div class="actions center">
-                    <input type="submit" value="Login">
+                    <button type="submit" value="Login">Login</button>
                 </div>
             </form>
+
+            <a href="/register"><button>Register</button></a>
 
             <p class="center small-muted">
                 <c:if test="${not empty message}">${message}</c:if>

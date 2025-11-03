@@ -13,7 +13,7 @@
     <div class="page-wrapper">
         <div class="card">
             <h2 class="center">Register</h2>
-            <form method="post" action="/register">
+            <form method="post" action="/register" class="form-column">
                 <label>Nickname:
                     <input type="text" name="name">
                 </label>

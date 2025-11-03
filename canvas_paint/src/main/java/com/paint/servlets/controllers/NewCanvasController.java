@@ -28,16 +28,14 @@ public class NewCanvasController extends HttpServlet {
         String ws = req.getParameter("width");
         String hs = req.getParameter("height");
 
-        int width = 800;
-        int height = 600;
+        int width = 500;
+        int height = 500;
         try {
             if (ws != null) width = Math.max(100, Math.min(2000, Integer.parseInt(ws)));
             if (hs != null) height = Math.max(100, Math.min(2000, Integer.parseInt(hs)));
         } catch (NumberFormatException e) {
-            // keep defaults
         }
 
-        // Redirect to canvas with params
         resp.sendRedirect(req.getContextPath() + "/canvas?width=" + width + "&height=" + height);
     }
 }

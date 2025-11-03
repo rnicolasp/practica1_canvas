@@ -14,22 +14,12 @@
     <div class="card center">
       <h2>Web paint</h2>
       <div>
-        <c:choose>
-          <c:when test="${not empty sessionScope.user}">
-            <p class="small-muted">Welcome, <strong>${sessionScope.name}</strong></p>
+            <p class="small-muted">Welcome, <strong>{user}</strong></p>
             <div class="actions center">
               <a href="/profile"><button>My profile</button></a>
               <a href="/canvas"><button>Create new canvas</button></a>
               <a href="/logout"><button>Logout</button></a>
             </div>
-          </c:when>
-          <c:otherwise>
-            <div class="actions center">
-              <a href="/login"><button>Login</button></a>
-              <a href="/register"><button>Register</button></a>
-            </div>
-          </c:otherwise>
-        </c:choose>
       </div>
     </div>
   </div>

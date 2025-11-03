@@ -14,9 +14,9 @@
     <div class="card">
       <div style="display:flex; justify-content:flex-end; gap:8px; align-items:center;">
         <a href="/home"><button id="homeBtn">Home</button></a>
-        <a href="/profile"><button id="profileBtn">Perfil</button></a>
+        <a href="/profile"><button id="profileBtn">Mi Perfil</button></a>
         <button id="saveBtn">Guardar</button>
-        <button id="settingsToggle">⚙️ Ajustes</button>
+        <button id="settingsToggle">Ajustes</button>
       </div>
 
       <div id="sizePanel" style="display:none; margin:8px 0;">
@@ -36,7 +36,6 @@
             </div>
           </div>
 
-          <!-- moved Home button to header -->
         </div>
 
         <div class="sidebar">
