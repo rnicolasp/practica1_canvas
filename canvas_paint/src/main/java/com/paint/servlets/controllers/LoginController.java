@@ -1,6 +1,6 @@
 package com.paint.servlets.controllers;
 
-import com.paint.servlets.DAOS.UserDAO;
+import com.paint.servlets.services.UserService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -25,9 +25,8 @@ public class LoginController  extends HttpServlet {
         String user = req.getParameter("user");
         String password = req.getParameter("password");
 
-        UserDAO userDAO = new UserDAO();
-
-        boolean userExists = userDAO.checkUser(user, password);
+    UserService userService = new UserService();
+    boolean userExists = userService.checkUser(user, password);
         if (userExists) {
             HttpSession session = req.getSession();
             session.setAttribute("user", user);

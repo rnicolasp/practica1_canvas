@@ -26,10 +26,16 @@
             <c:forEach var="save" items="${saves}">
               <li class="object-item">
                 <div class="object-left">
-                  <div class="object-name"><strong>${save}</strong></div>
+                  <div class="object-name"><strong>${save.name}</strong></div>
+                  <div class="small-muted">${save.filename}</div>
                 </div>
                 <div class="object-right">
-                  <a href="/saveCanvas?file=${save}"><button>Download JSON</button></a>
+                  <a href="/saveCanvas?file=${save.filename}"><button>Download JSON</button></a>
+                  <a href="/canvas?loadFile=${save.filename}"><button>Load</button></a>
+                  <form method="post" action="/deleteCanvas" style="display:inline" onsubmit="return confirm('Delete this saved canvas?');">
+                    <input type="hidden" name="file" value="${save.filename}" />
+                    <button type="submit">Delete</button>
+                  </form>
                 </div>
               </li>
             </c:forEach>
@@ -39,7 +45,3 @@
           <p class="small-muted center">No saved canvases yet.</p>
         </c:otherwise>
       </c:choose>
-    </div>
-  </div>
-</body>
-</html>

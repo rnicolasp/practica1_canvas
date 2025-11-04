@@ -1,5 +1,7 @@
 package com.paint.servlets.controllers;
 
+import com.paint.servlets.DAOS.CanvasDAO;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -7,14 +9,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
-import java.io.FileOutputStream;
+ 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Instant;
 
 @WebServlet("/saveCanvas")
 public class SaveCanvasController extends HttpServlet {
@@ -22,14 +23,10 @@ public class SaveCanvasController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
         if (session == null) {
-            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not logged in");
+            resp.sendRedirect("/login");
             return;
         }
         String user = (String) session.getAttribute("user");
-        if (user == null) {
-            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not logged in");
-            return;
-        }
 
         // Read request body (JSON)
         StringBuilder sb = new StringBuilder();
@@ -41,18 +38,48 @@ public class SaveCanvasController extends HttpServlet {
         }
         String body = sb.toString();
 
-        // Save to user directory under OS home
-        String userHome = System.getProperty("user.home");
-        Path base = Paths.get(userHome, "canvas_paint_saves", user);
-        Files.createDirectories(base);
-
-        String filename = "canvas-" + Instant.now().toEpochMilli() + ".json";
-        Path file = base.resolve(filename);
-        try (FileOutputStream fos = new FileOutputStream(file.toFile())) {
-            fos.write(body.getBytes(StandardCharsets.UTF_8));
-        }
+    // Use DAO to save a named canvas
+    String displayName = req.getParameter("name");
+    if (displayName == null) displayName = "canvas";
+    String fileParam = req.getParameter("file");
+    String filename = CanvasDAO.save(user, displayName, body, fileParam);
 
         resp.setContentType("application/json;charset=UTF-8");
         resp.getWriter().write("{\"status\":\"ok\",\"file\":\"" + filename + "\"}");
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        HttpSession session = req.getSession(false);
+        if (session == null) {
+            resp.sendRedirect("/login");
+            return;
+        }
+        String user = (String) session.getAttribute("user");
+        String fileParam = req.getParameter("file");
+        if (fileParam == null || fileParam.trim().isEmpty()) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write("");
+            return;
+        }
+        // first try to load from in-memory DAO (saved during current app run)
+        String payload = com.paint.servlets.DAOS.CanvasDAO.loadPayload(user, fileParam);
+        if (payload != null) {
+            resp.setContentType("application/json;charset=UTF-8");
+            resp.getWriter().write(payload);
+            return;
+        }
+
+        // fallback: try reading from user's filesystem saves (existing behavior)
+        String userHome = System.getProperty("user.home");
+        Path file = Paths.get(userHome, "canvas_paint_saves", user, fileParam);
+        if (!Files.exists(file)) {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            resp.getWriter().write("");
+            return;
+        }
+        byte[] data = Files.readAllBytes(file);
+        resp.setContentType("application/json;charset=UTF-8");
+        resp.getOutputStream().write(data);y
     }
 }

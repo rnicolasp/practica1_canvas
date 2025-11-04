@@ -1,6 +1,6 @@
 package com.paint.servlets.controllers;
 
-import com.paint.servlets.DAOS.UserDAO;
+import com.paint.servlets.services.UserService;
 import com.paint.servlets.models.User;
 
 import javax.servlet.ServletException;
@@ -26,13 +26,13 @@ public class RegisterController extends HttpServlet {
         String name = req.getParameter("name");
         String user = req.getParameter("user");
         String password = req.getParameter("password");
-        UserDAO userDAO = new UserDAO();
-        boolean userExists = userDAO.userExists(user);
+        UserService userService = new UserService();
+        boolean userExists = userService.userExists(user);
         if (userExists) {
             req.setAttribute("message","User already exists");
             return;
         } else {
-            UserDAO.registerUser(name,user,password);
+            userService.registerUser(name, user, password);
         }
 
         req.getRequestDispatcher("WEB-INF/jsp/login.jsp")

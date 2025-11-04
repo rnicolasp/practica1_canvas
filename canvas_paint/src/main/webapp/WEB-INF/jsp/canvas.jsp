@@ -27,7 +27,7 @@
       </div>
 
       <div class="canvas-area">
-        <script src="/js/canvas-app.js"></script>
+  <script src="/js/canvas-app.js"></script>
 
         <div style="flex:1">
           <div style="display:flex; justify-content:center">

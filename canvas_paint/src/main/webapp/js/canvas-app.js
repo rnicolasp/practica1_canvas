@@ -7,8 +7,10 @@
   if(!canvas) return;
   const cfg = window.CANVAS_CONFIG || { initialWidth: parseInt(canvas.getAttribute('data-initial-width'),10) || canvas.width, initialHeight: parseInt(canvas.getAttribute('data-initial-height'),10) || canvas.height };
     const ctx = canvas.getContext('2d');
-    let drawing = false;
-    let currentFree = null;
+  let drawing = false;
+  let currentFree = null;
+  let currentShape = null;
+  let currentSaveFile = null;
     let objects = [];
     let idCounter = 1;
     let currentWidth = canvas.width;
@@ -133,6 +135,33 @@
       canvas.width = w; canvas.height = h; currentWidth = w; currentHeight = h; inputW.value = w; inputH.value = h; redraw();
     });
 
+    // Save button handler: serialize current canvas objects and post to server
+    const saveBtn = document.getElementById('saveBtn');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', ()=>{
+        // assemble payload
+        const payload = { width: canvas.width, height: canvas.height, objects: objects };
+        // ask for a friendly name
+        let name = prompt('Nombre para guardar el canvas:', 'canvas');
+        if (name === null) return; // cancelled
+        name = name.trim() || 'canvas';
+
+        fetch('/saveCanvas?name=' + encodeURIComponent(name), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+          body: JSON.stringify(payload)
+        }).then(r => r.json()).then(j => {
+          if (j && j.status === 'ok') {
+            alert('Canvas saved as ' + j.file);
+            // store current save filename if needed
+            currentSaveFile = j.file;
+          } else {
+            alert('Save failed');
+          }
+        }).catch(err => { console.error(err); alert('Save request failed'); });
+      });
+    }
+
     const settingsToggle = document.getElementById('settingsToggle');
     const sizePanel = document.getElementById('sizePanel');
     if(settingsToggle && sizePanel){
@@ -142,33 +171,6 @@
 
     if(inputW) inputW.value = cfg.initialWidth || currentWidth;
     if(inputH) inputH.value = cfg.initialHeight || currentHeight;
-
-  if(sizeDisplay && sizeInput){ sizeDisplay.textContent = sizeInput.value; sizeInput.addEventListener('input', ()=>{ sizeDisplay.textContent = sizeInput.value; }); }
-
-    redraw();
-
-    const saveBtn = document.getElementById('saveBtn');
-    if(saveBtn){
-      saveBtn.addEventListener('click', async ()=>{
-        try{
-          // first send JSON state to server
-          const payload = { objects: objects, width: canvas.width, height: canvas.height };
-          const res = await fetch('/saveCanvas', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-          if(!res.ok){ throw new Error('Save failed'); }
-          const json = await res.json();
-          // then download PNG locally as user requested
-          const data = canvas.toDataURL('image/png');
-          const a = document.createElement('a');
-          a.href = data;
-          a.download = 'canvas.png';
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          alert('Guardado en servidor: ' + (json.file || 'ok'));
-        }catch(err){
-          alert('Error saving canvas: ' + err.message);
-        }
-      });
-    }
+  
   });
 })();

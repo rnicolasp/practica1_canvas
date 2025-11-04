@@ -15,8 +15,9 @@ public class UserDAO {
     }
 
     public static boolean checkUser(String username, String password) {
+        String userNoCaps = username.toLowerCase();
         for (User user : userDatabase) {
-            if (user.getUser().equals(username)) {
+            if (user.getUser().equals(userNoCaps)) {
                 return user.getPassword().equals(password);
             }
         }
@@ -24,8 +25,9 @@ public class UserDAO {
     }
 
     public static boolean userExists(String username){
+        String userNoCaps = username.toLowerCase();
         for (User user : userDatabase){
-            if (user.getUser().equals(username)){
+            if (user.getUser().equals(userNoCaps)){
                 return  true;
             }
         }
@@ -44,7 +46,8 @@ public class UserDAO {
     }
 
     public static void registerUser(String name, String user, String password) {
-        User nouRegistre = new User(name,user,password);
+        String userNoCaps = user.toLowerCase();
+        User nouRegistre = new User(name,userNoCaps,password);
         userDatabase.add(nouRegistre);
     }
 }
