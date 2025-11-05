@@ -7,13 +7,13 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Login</title>
-        <link rel="stylesheet" href="/css/home.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/home.css">
 </head>
 <body>
     <div class="page-wrapper">
         <div class="card">
             <h2 class="center">Login</h2>
-            <form method="post" action="/login" class="form-column">
+            <form method="post" action="${pageContext.request.contextPath}/login" class="form-column">
                 <label>Username:
                     <input type="text" name="user">
                 </label>
@@ -27,7 +27,7 @@
                 </div>
             </form>
 
-            <a href="/register"><button>Register</button></a>
+            <a href="${pageContext.request.contextPath}/register"><button>Register</button></a>
 
             <p class="center small-muted">
                 <c:if test="${not empty message}">${message}</c:if>

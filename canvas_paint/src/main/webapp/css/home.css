@@ -62,3 +62,49 @@ input[type="number"], input[type="text"], input[type="password"], select {
 
 .center { text-align: center }
 
+.canvas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.canvas-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 15px;
+    transition: transform 0.2s;
+}
+
+.canvas-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.canvas-card h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.canvas-card .canvas-info {
+    margin-bottom: 15px;
+}
+
+.canvas-card .canvas-info p {
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.canvas-card .canvas-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.canvas-card .canvas-actions button {
+    flex: 1;
+    min-width: 80px;
+}
+

@@ -7,15 +7,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Canvas</title>
-  <link rel="stylesheet" href="/css/home.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/home.css">
 </head>
 <body>
   <div class="page-wrapper">
     <div class="card">
       <div style="display:flex; justify-content:flex-end; gap:8px; align-items:center;">
-        <a href="/home"><button id="homeBtn">Home</button></a>
-        <a href="/profile"><button id="profileBtn">Mi Perfil</button></a>
-        <button id="saveBtn">Guardar</button>
+        <a href="${pageContext.request.contextPath}/home"><button>Home</button></a>
+        <a href="${pageContext.request.contextPath}/profile"><button>Mi Perfil</button></a>
+        <button id="saveButton">Guardar</button>
         <button id="settingsToggle">Ajustes</button>
       </div>
 
@@ -27,15 +27,12 @@
       </div>
 
       <div class="canvas-area">
-  <script src="/js/canvas-app.js"></script>
-
         <div style="flex:1">
           <div style="display:flex; justify-content:center">
             <div class="canvas-wrap">
               <canvas id="paintCanvas" width="${width}" height="${height}" data-initial-width="${width}" data-initial-height="${height}" style="background:#fff;display:block;"></canvas>
             </div>
           </div>
-
         </div>
 
         <div class="sidebar">
@@ -76,5 +73,6 @@
         </div>
       </div>
     </div>
+    <script src="${pageContext.request.contextPath}/js/canvas.js"></script>
 </body>
 </html>

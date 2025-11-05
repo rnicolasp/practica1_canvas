@@ -11,7 +11,7 @@ import com.paint.servlets.services.UserService;
 
 import java.io.IOException;
 
-@WebServlet("/home")
+@WebServlet("/private")
 public class privateController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

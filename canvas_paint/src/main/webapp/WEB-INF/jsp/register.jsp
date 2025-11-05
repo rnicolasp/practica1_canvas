@@ -7,13 +7,13 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Register</title>
-        <link rel="stylesheet" href="/css/home.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/home.css">
 </head>
 <body>
     <div class="page-wrapper">
         <div class="card">
             <h2 class="center">Register</h2>
-            <form method="post" action="/register" class="form-column">
+            <form method="post" action="${pageContext.request.contextPath}/register" class="form-column">
                 <label>Nickname:
                     <input type="text" name="name">
                 </label>

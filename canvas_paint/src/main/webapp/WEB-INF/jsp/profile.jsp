@@ -6,7 +6,7 @@
 <head>
   <meta charset="utf-8">
   <title>Profile</title>
-  <link rel="stylesheet" href="/css/home.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/home.css">
 </head>
 <body>
   <div class="page-wrapper">
@@ -15,31 +15,33 @@
       <p><strong>User:</strong> ${name} (${user})</p>
 
       <div class="actions center">
-        <a href="/canvas"><button>Create new canvas</button></a>
-        <a href="/home"><button>Home</button></a>
+        <a href="${pageContext.request.contextPath}/canvas"><button>Create new canvas</button></a>
+        <a href="${pageContext.request.contextPath}/home"><button>Home</button></a>
       </div>
       <hr>
       <h3 class="center">Saved canvases</h3>
       <c:choose>
         <c:when test="${not empty saves}">
-          <ul class="object-list">
+          <div class="canvas-grid">
             <c:forEach var="save" items="${saves}">
-              <li class="object-item">
-                <div class="object-left">
-                  <div class="object-name"><strong>${save.name}</strong></div>
-                  <div class="small-muted">${save.filename}</div>
+              <div class="canvas-card">
+                <h4>${save.name}</h4>
+                <div class="canvas-info">
+                  <p><strong>ID:</strong> ${save.id}</p>
+                  <p><strong>Filename:</strong> ${save.filename}</p>
+                  <p><strong>Owner:</strong> ${save.owner}</p>
                 </div>
-                <div class="object-right">
-                  <a href="/saveCanvas?file=${save.filename}"><button>Download JSON</button></a>
-                  <a href="/canvas?loadFile=${save.filename}"><button>Load</button></a>
-                  <form method="post" action="/deleteCanvas" style="display:inline" onsubmit="return confirm('Delete this saved canvas?');">
+                <div class="canvas-actions">
+                  <a href="${pageContext.request.contextPath}/saveCanvas?file=${save.filename}"><button>Download JSON</button></a>
+                  <a href="${pageContext.request.contextPath}/canvas?loadFile=${save.filename}"><button>Load</button></a>
+                  <form method="post" action="${pageContext.request.contextPath}/deleteCanvas" style="display:inline" onsubmit="return confirm('Delete this saved canvas?');">
                     <input type="hidden" name="file" value="${save.filename}" />
                     <button type="submit">Delete</button>
                   </form>
                 </div>
-              </li>
+              </div>
             </c:forEach>
-          </ul>
+          </div>
         </c:when>
         <c:otherwise>
           <p class="small-muted center">No saved canvases yet.</p>
