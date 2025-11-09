@@ -34,9 +34,9 @@ public class CanvasDAO {
         );
     }
 
-    public static String loadCanvas(String user, String filename) {
+    public static String loadCanvas(String filename) {
         for (Canvas canvas : canvasDatabase) {
-            if (user.equals(canvas.getOwner()) && filename.equals(canvas.getFilename())) {
+            if (filename.equals(canvas.getFilename())) {
                 return canvas.getContent();
             }
         }

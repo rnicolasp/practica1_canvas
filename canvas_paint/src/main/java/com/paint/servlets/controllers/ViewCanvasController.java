@@ -27,7 +27,7 @@ public class ViewCanvasController extends HttpServlet {
             return;
         }
 
-        String canvasData = CanvasDAO.loadCanvas(user, fileToLoad);
+        String canvasData = CanvasDAO.loadCanvas(fileToLoad);
 
         req.setAttribute("canvasData", canvasData);
         req.getRequestDispatcher("WEB-INF/jsp/viewCanvas.jsp").forward(req, resp);

@@ -22,7 +22,7 @@ public class CanvasService {
     }
 
     public String loadCanvasContent(String user, String filename) {
-        return CanvasDAO.loadCanvas(user, filename);
+        return CanvasDAO.loadCanvas(filename);
     }
 
     public List<Canvas> listAllCanvas() {
