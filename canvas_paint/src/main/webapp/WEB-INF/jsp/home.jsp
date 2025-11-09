@@ -1,4 +1,5 @@
 <%@ page isELIgnored="false" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 
 <!DOCTYPE html>
@@ -14,27 +15,26 @@
     <div class="card">
       <h2 class="center">ePaint</h2>
       <div>
-        <p class="small-muted">Welcome, <strong>${user}</strong></p>
+        <p class="small-muted">Bienvenido, <strong>${user}</strong></p>
         <div class="actions center">
-          <a href="${pageContext.request.contextPath}/profile"><button>My profile</button></a>
-          <a href="${pageContext.request.contextPath}/canvas"><button>Create new canvas</button></a>
-          <a href="${pageContext.request.contextPath}/logout"><button>Logout</button></a>
+          <a href="${pageContext.request.contextPath}/profile"><button>Mi Perfil</button></a>
+          <a href="${pageContext.request.contextPath}/canvas"><button>Crear nuevo lienzo</button></a>
+          <a href="${pageContext.request.contextPath}/logout"><button>Cerrar sesión</button></a>
         </div>
       </div>
 
       <hr>
-      <h3 class="center">All Canvases</h3>
+      <h3 class="center">Todos los Lienzos</h3>
       <div class="canvas-grid">
         <c:forEach var="canvas" items="${allCanvas}">
           <div class="canvas-card">
             <h4>${canvas.name}</h4>
             <div class="canvas-info">
-              <p><strong>Created by:</strong> ${canvas.owner}</p>
+              <p><strong>Creado por:</strong> ${canvas.owner}</p>
               <p><strong>ID:</strong> ${canvas.id}</p>
-              <p><strong>Filename:</strong> ${canvas.filename}</p>
             </div>
             <div class="canvas-actions">
-              <a href="${pageContext.request.contextPath}/canvas?loadFile=${canvas.filename}"><button>Load</button></a>
+              <a href="${pageContext.request.contextPath}/viewCanvas?loadFile=${canvas.filename}"><button>Cargar</button></a>
             </div>
           </div>
         </c:forEach>

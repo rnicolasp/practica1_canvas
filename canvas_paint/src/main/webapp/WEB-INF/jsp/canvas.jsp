@@ -1,4 +1,5 @@
 <%@ page isELIgnored="false" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 
 <!DOCTYPE html>
@@ -6,29 +7,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Canvas</title>
+  <title>Lienzo</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/home.css">
 </head>
 <body>
   <div class="page-wrapper">
     <div class="card">
       <div style="display:flex; justify-content:flex-end; gap:8px; align-items:center;">
-        <a href="${pageContext.request.contextPath}/home"><button>Home</button></a>
+        <a href="${pageContext.request.contextPath}/home"><button>Inicio</button></a>
         <a href="${pageContext.request.contextPath}/profile"><button>Mi Perfil</button></a>
-        <button id="saveButton">Guardar</button>
+        <button id="saveBtn">Guardar</button>
         <button id="settingsToggle">Ajustes</button>
       </div>
 
       <div id="sizePanel" style="display:none; margin:8px 0;">
-        <label style="margin-right:8px">W: <input id="inputWidth" type="number" min="100" max="2000" value="${width}" style="width:80px"></label>
-        <label style="margin-right:8px">H: <input id="inputHeight" type="number" min="100" max="2000" value="${height}" style="width:80px"></label>
-        <button id="applySize">Apply</button>
-        <button id="resetSize" type="button">Reset</button>
+        <label style="margin-right:8px">Ancho: <input id="inputWidth" type="number" min="100" max="2000" value="${width}" style="width:80px"></label>
+        <label style="margin-right:8px">Alto: <input id="inputHeight" type="number" min="100" max="2000" value="${height}" style="width:80px"></label>
+        <button id="applySize">Aplicar</button>
+        <button id="resetSize" type="button">Restablecer</button>
       </div>
 
       <div class="canvas-area">
         <div style="flex:1">
-          <div style="display:flex; justify-content:center">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <h3 class="canvas-title" style="margin:0; cursor:pointer;" title="Doble click para editar" ondblclick="this.style.display='none';document.getElementById('canvasNameInput').style.display='block';document.getElementById('canvasNameInput').focus();" id="canvasNameDisplay">Lienzo sin título</h3>
+              <input type="text" id="canvasNameInput" value="Lienzo sin título" style="display:none; font-size:1.17em; margin:0; padding:4px;" onblur="this.style.display='none';document.getElementById('canvasNameDisplay').style.display='block';document.getElementById('canvasNameDisplay').textContent=this.value;" onkeypress="if(event.keyCode===13)this.blur();">
+            </div>
             <div class="canvas-wrap">
               <canvas id="paintCanvas" width="${width}" height="${height}" data-initial-width="${width}" data-initial-height="${height}" style="background:#fff;display:block;"></canvas>
             </div>
@@ -37,37 +42,37 @@
 
         <div class="sidebar">
           <div class="card">
-            <h3 class="center">Tools</h3>
+            <h3 class="center">Herramientas</h3>
             <div class="form-column">
-              <label>Mode:
+              <label>Modo:
                 <select id="mode">
-                  <option value="shape">Add shape (click)</option>
-                  <option value="freehand">Freehand draw</option>
+                  <option value="freehand">Dibujo a mano alzada</option>
+                  <option value="shape">Añadir forma (click)</option>
                 </select>
               </label>
 
-              <label>Shape:
+              <label>Forma:
                 <select id="shapeType">
-                  <option value="circle">Circle</option>
-                  <option value="square">Square</option>
-                  <option value="triangle">Triangle</option>
-                  <option value="star7">7-point star</option>
+                  <option value="circle">Círculo</option>
+                  <option value="square">Cuadrado</option>
+                  <option value="triangle">Triángulo</option>
+                  <option value="star7">Estrella 7 puntas</option>
                 </select>
               </label>
 
               <label>Color: <input id="color" type="color" value="#ff0000"></label>
-              <label>Size (px):
+              <label>Tamaño (px):
                 <input id="size" type="range" min="1" max="100" value="8">
                 <span id="sizeDisplay" class="small-muted">8</span>
               </label>
 
               <div class="controls-row">
-                <button id="addCenter">Add at center</button>
-                <button id="clearAll">Clear all</button>
+                <button id="addCenter">Añadir en centro</button>
+                <button id="clearAll">Limpiar todo</button>
               </div>
             </div>
             <hr>
-            <h3 class="center">Objects</h3>
+            <h3 class="center">Objetos</h3>
             <ul id="objects" class="object-list"></ul>
           </div>
         </div>

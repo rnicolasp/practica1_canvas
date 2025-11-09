@@ -28,9 +28,15 @@ public class SaveCanvasController extends HttpServlet {
         if (name == null || name.trim().isEmpty()) {
             name = "Mi Canvas";
         }
-        
-        CanvasDAO.save(user, name, content, null);
+        String savedFilename = CanvasDAO.save(user, name, content, null);
+
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
         resp.setStatus(HttpServletResponse.SC_OK);
+
+        String jsonResponse = "{\"status\": \"ok\", \"file\": \"" + savedFilename + "\"}";
+        resp.getWriter().write(jsonResponse);
+
     }
     
     @Override

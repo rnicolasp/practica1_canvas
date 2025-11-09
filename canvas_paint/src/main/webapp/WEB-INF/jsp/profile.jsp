@@ -1,25 +1,26 @@
 <%@ page isELIgnored="false" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Profile</title>
+  <title>Perfil</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/home.css">
 </head>
 <body>
   <div class="page-wrapper">
     <div class="card">
-      <h2 class="center">Profile</h2>
-      <p><strong>User:</strong> ${name} (${user})</p>
+      <h2 class="center">Perfil</h2>
+      <p><strong>Usuario:</strong> ${name} (${user})</p>
 
       <div class="actions center">
-        <a href="${pageContext.request.contextPath}/canvas"><button>Create new canvas</button></a>
-        <a href="${pageContext.request.contextPath}/home"><button>Home</button></a>
+        <a href="${pageContext.request.contextPath}/canvas"><button>Crear nuevo lienzo</button></a>
+        <a href="${pageContext.request.contextPath}/home"><button>Inicio</button></a>
       </div>
       <hr>
-      <h3 class="center">Saved canvases</h3>
+      <h3 class="center">Lienzos guardados</h3>
       <c:choose>
         <c:when test="${not empty saves}">
           <div class="canvas-grid">
@@ -28,15 +29,13 @@
                 <h4>${save.name}</h4>
                 <div class="canvas-info">
                   <p><strong>ID:</strong> ${save.id}</p>
-                  <p><strong>Filename:</strong> ${save.filename}</p>
-                  <p><strong>Owner:</strong> ${save.owner}</p>
+                  <p><strong>Propietario:</strong> ${save.owner}</p>
                 </div>
                 <div class="canvas-actions">
-                  <a href="${pageContext.request.contextPath}/saveCanvas?file=${save.filename}"><button>Download JSON</button></a>
-                  <a href="${pageContext.request.contextPath}/canvas?loadFile=${save.filename}"><button>Load</button></a>
-                  <form method="post" action="${pageContext.request.contextPath}/deleteCanvas" style="display:inline" onsubmit="return confirm('Delete this saved canvas?');">
+                  <a href="${pageContext.request.contextPath}/viewCanvas?loadFile=${save.filename}"><button>Cargar</button></a>
+                  <form method="post" action="${pageContext.request.contextPath}/deleteCanvas" style="display:inline" onsubmit="return confirm('¿Eliminar este lienzo guardado?');">
                     <input type="hidden" name="file" value="${save.filename}" />
-                    <button type="submit">Delete</button>
+                    <button type="submit">Eliminar</button>
                   </form>
                 </div>
               </div>
@@ -44,6 +43,6 @@
           </div>
         </c:when>
         <c:otherwise>
-          <p class="small-muted center">No saved canvases yet.</p>
+          <p class="small-muted center">No hay lienzos guardados.</p>
         </c:otherwise>
       </c:choose>

@@ -1,4 +1,5 @@
 <%@ page isELIgnored="false" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 
 <!DOCTYPE html>
@@ -6,28 +7,28 @@
 <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Register</title>
+        <title>Registro</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/home.css">
 </head>
 <body>
     <div class="page-wrapper">
         <div class="card">
-            <h2 class="center">Register</h2>
+            <h2 class="center">Registro</h2>
             <form method="post" action="${pageContext.request.contextPath}/register" class="form-column">
-                <label>Nickname:
+                <label>Nombre:
                     <input type="text" name="name">
                 </label>
 
-                <label>Username:
+                <label>Usuario:
                     <input type="text" name="user">
                 </label>
 
-                <label>Password:
+                <label>Contraseña:
                     <input type="password" name="password">
                 </label>
 
                 <div class="actions center">
-                    <input type="submit" value="Register">
+                    <input type="submit" value="Registrarse">
                 </div>
             </form>
 

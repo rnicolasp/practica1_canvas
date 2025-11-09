@@ -1,192 +1,187 @@
-document.addEventListener('DOMContentLoaded', function() {
-  const canvas = document.getElementById('paintCanvas');
-  if (!canvas) {
-    console.error('No se encontró el elemento canvas');
-    return;
-  }
-  
-  const ctx = canvas.getContext('2d');
-  let drawing = false;
-  let currentFree = null;
-  let currentShape = null;
-  const initialWidth = canvas.width;
-  const initialHeight = canvas.height;
+(function () {
+  'use strict';
+  function ready(fn) { if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
 
-  // Referencias a elementos DOM
-  const modeSelect = document.getElementById('mode');
-  const shapeType = document.getElementById('shapeType');
-  const colorInput = document.getElementById('color');
-  const sizeInput = document.getElementById('size');
-  const inputW = document.getElementById('inputWidth');
-  const inputH = document.getElementById('inputHeight');
-  const settingsToggle = document.getElementById('settingsToggle');
-  const sizePanel = document.getElementById('sizePanel');
-  
-  // Configuración inicial
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.strokeStyle = colorInput.value;
-  ctx.lineWidth = parseInt(sizeInput.value, 10) || 2;
+  ready(function () {
+    const canvas = document.getElementById('paintCanvas');
+    if (!canvas) return;
+    const cfg = window.CANVAS_CONFIG || { initialWidth: parseInt(canvas.getAttribute('data-initial-width'), 10) || canvas.width, initialHeight: parseInt(canvas.getAttribute('data-initial-height'), 10) || canvas.height };
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+    let currentFree = null;
+    let currentShape = null;
+    let currentSaveFile = null;
+    let objects = [];
+    let idCounter = 1;
+    let currentWidth = canvas.width;
+    let currentHeight = canvas.height;
 
-  function pos(e) {
-    const r = canvas.getBoundingClientRect();
-    return { x: e.clientX - r.left, y: e.clientY - r.top };
-  }
+    const modeSelect = document.getElementById('mode');
+    const shapeType = document.getElementById('shapeType');
+    const colorInput = document.getElementById('color');
+    const sizeInput = document.getElementById('size');
+    const sizeDisplay = document.getElementById('sizeDisplay');
+    const objectsList = document.getElementById('objects');
 
-  function drawShape(x, y, size, type) {
-    ctx.beginPath();
-    switch(type) {
-      case 'circle':
-        ctx.arc(x, y, size, 0, Math.PI * 2);
-        break;
-      case 'square':
-        ctx.fillRect(x - size, y - size, size * 2, size * 2);
-        break;
-      case 'triangle':
-        ctx.moveTo(x, y - size);
-        ctx.lineTo(x - size, y + size);
-        ctx.lineTo(x + size, y + size);
-        ctx.closePath();
-        break;
+    function redraw() {
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      objects.forEach(o => { if (o.type === 'freehand') drawFreehand(o); else drawShape(o); });
     }
-    ctx.fill();
-  }
 
-  // Eventos del mouse
-  canvas.addEventListener('mousedown', e => {
-    drawing = true;
-    const p = pos(e);
-    ctx.strokeStyle = colorInput.value;
-    ctx.fillStyle = colorInput.value;
-    ctx.lineWidth = parseInt(sizeInput.value, 10) || 2;
-    
-    if (modeSelect.value === 'freehand') {
-      ctx.beginPath();
-      ctx.moveTo(p.x, p.y);
-    } else {
-      currentShape = {
-        x: p.x,
-        y: p.y,
-        size: parseInt(sizeInput.value, 10) || 20
-      };
-    }
-  });
+    function drawShape(o) { ctx.save(); ctx.fillStyle = o.color; ctx.strokeStyle = o.color; ctx.lineWidth = 2; const x = o.x, y = o.y, s = o.size; if (o.type === 'circle') { ctx.beginPath(); ctx.arc(x, y, s, 0, Math.PI * 2); ctx.fill(); ctx.closePath(); } else if (o.type === 'square') { ctx.fillRect(x - s, y - s, s * 2, s * 2); } else if (o.type === 'triangle') { ctx.beginPath(); ctx.moveTo(x, y - s); ctx.lineTo(x - s, y + s); ctx.lineTo(x + s, y + s); ctx.closePath(); ctx.fill(); } else if (o.type === 'star7') { drawStar(ctx, x, y, s, 7); ctx.fill(); } ctx.restore(); }
 
-  canvas.addEventListener('mousemove', e => {
-    if (!drawing) return;
-    const p = pos(e);
-    
-    if (modeSelect.value === 'freehand') {
-      ctx.lineTo(p.x, p.y);
-      ctx.stroke();
-    }
-  });
+    function drawFreehand(o) { const pts = o.points; if (!pts || pts.length === 0) return; ctx.save(); ctx.strokeStyle = o.color; ctx.lineWidth = (o.size || 2); ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y); for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y); ctx.stroke(); ctx.closePath(); ctx.restore(); }
 
-  window.addEventListener('mouseup', () => {
-    if (drawing && currentShape && modeSelect.value === 'shape') {
-      drawShape(currentShape.x, currentShape.y, currentShape.size, shapeType.value);
-      currentShape = null;
-    }
-    drawing = false;
-  });
+    function drawStar(ctx, x, y, r, points) { const outer = r, inner = r * 0.45, step = Math.PI / points; ctx.beginPath(); for (let i = 0; i < 2 * points; i++) { const radius = (i % 2 === 0) ? outer : inner; const a = i * step - Math.PI / 2; const px = x + Math.cos(a) * radius; const py = y + Math.sin(a) * radius; if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py); } ctx.closePath(); }
 
-  // Eventos táctiles
-  canvas.addEventListener('touchstart', e => {
-    e.preventDefault();
-    drawing = true;
-    const t = e.touches[0];
-    const p = pos(t);
-    ctx.beginPath();
-    ctx.moveTo(p.x, p.y);
-  });
+    function drawShapePreview(o) { if (!o) return; ctx.save(); ctx.globalAlpha = 0.45; ctx.fillStyle = o.color; ctx.strokeStyle = o.color; ctx.lineWidth = 1; const x = o.startX, y = o.startY, s = o.size; if (o.type === 'circle') { ctx.beginPath(); ctx.arc(x, y, s, 0, Math.PI * 2); ctx.fill(); ctx.closePath(); } else if (o.type === 'square') { ctx.fillRect(x - s, y - s, s * 2, s * 2); } else if (o.type === 'triangle') { ctx.beginPath(); ctx.moveTo(x, y - s); ctx.lineTo(x - s, y + s); ctx.lineTo(x + s, y + s); ctx.closePath(); ctx.fill(); } else if (o.type === 'star7') { drawStar(ctx, x, y, s, 7); ctx.fill(); } ctx.restore(); }
 
-  canvas.addEventListener('touchmove', e => {
-    e.preventDefault();
-    if (!drawing) return;
-    const t = e.touches[0];
-    const p = pos(t);
-    ctx.lineTo(p.x, p.y);
-    ctx.stroke();
-  });
+    function addObject(o) { o.id = idCounter++; objects.push(o); renderList(); redraw(); }
+    function renderList() {
+      objectsList.innerHTML = '';
+      objects.forEach((o, idx) => {
+        const li = document.createElement('li'); li.className = 'object-item';
+        const left = document.createElement('div'); left.className = 'object-left';
+        const displayName = document.createElement('div'); displayName.className = 'object-name';
+        displayName.innerHTML = '<strong>' + (o.name || (o.type + ' ' + (idx + 1))) + '</strong>';
+        const meta = document.createElement('div'); meta.className = 'small'; meta.textContent = o.type + ' @ ' + Math.round(o.x) + ',' + Math.round(o.y);
+        left.appendChild(displayName); left.appendChild(meta);
 
-  window.addEventListener('touchend', () => {
-    drawing = false;
-  });
+        const right = document.createElement('div'); right.className = 'object-right';
+        const del = document.createElement('button'); del.textContent = 'Delete'; del.addEventListener('click', () => { removeObject(o.id); });
+        right.appendChild(del);
 
-  // Control de tamaño del canvas
-  function clamp(v) {
-    return Math.max(100, Math.min(2000, Math.floor(v) || 0));
-  }
+        if (!o.renamed) {
+          const startRename = () => {
+            const input = document.createElement('input'); input.type = 'text'; input.value = o.name || (o.type + ' ' + (idx + 1));
+            const save = document.createElement('button'); save.textContent = 'Save';
+            save.addEventListener('click', () => { const v = input.value.trim(); if (v.length > 0) { o.name = v; o.renamed = true; renderList(); } });
+            displayName.innerHTML = ''; displayName.appendChild(input); displayName.appendChild(save);
+          };
+          displayName.addEventListener('dblclick', startRename);
+        }
 
-  document.getElementById('applySize')?.addEventListener('click', () => {
-    const w = clamp(inputW.value);
-    const h = clamp(inputH.value);
-    const tmp = document.createElement('canvas');
-    tmp.width = w;
-    tmp.height = h;
-    const tctx = tmp.getContext('2d');
-    tctx.fillStyle = '#fff';
-    tctx.fillRect(0, 0, w, h);
-    tctx.drawImage(canvas, 0, 0, w, h);
-    canvas.width = w;
-    canvas.height = h;
-    ctx.drawImage(tmp, 0, 0);
-  });
-
-  document.getElementById('resetSize')?.addEventListener('click', () => {
-    canvas.width = initialWidth;
-    canvas.height = initialHeight;
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    inputW.value = initialWidth;
-    inputH.value = initialHeight;
-  });
-
-  // Eventos de cambio de herramientas
-  colorInput?.addEventListener('change', () => {
-    ctx.strokeStyle = colorInput.value;
-    ctx.fillStyle = colorInput.value;
-  });
-
-  sizeInput?.addEventListener('change', () => {
-    ctx.lineWidth = parseInt(sizeInput.value, 10) || 2;
-  });
-
-  // Panel de ajustes
-  if (settingsToggle && sizePanel) {
-    settingsToggle.addEventListener('click', () => {
-      sizePanel.style.display = sizePanel.style.display === 'none' ? 'block' : 'none';
-    });
-  }
-
-  // Función para guardar el canvas
-  window.saveCanvas = async function(name) {
-    const canvasData = {
-      width: canvas.width,
-      height: canvas.height,
-      content: canvas.toDataURL()
-    };
-
-    try {
-      const response = await fetch('/saveCanvas' + (name ? `?name=${name}` : ''), {
-        method: 'POST',
-        body: JSON.stringify(canvasData)
+        li.appendChild(left); li.appendChild(right); objectsList.appendChild(li);
       });
-      
-      if (response.ok) {
-        alert('Canvas guardado correctamente');
-        window.location.href = '/profile';
-      }
-    } catch (error) {
-      console.error('Error al guardar:', error);
     }
-  };
+    function removeObject(id) { objects = objects.filter(o => o.id !== id); renderList(); redraw(); }
+    function clearAll() { objects = []; renderList(); redraw(); }
 
-  // Botón de guardado
-  document.getElementById('saveButton')?.addEventListener('click', () => {
-    const name = prompt('Nombre para el canvas:', 'Mi Canvas');
-    if (name) {
-      saveCanvas(name);
+    function canvasPos(e) { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+
+    canvas.addEventListener('mousedown', e => {
+      const p = canvasPos(e);
+      if (modeSelect.value === 'freehand') {
+        drawing = true;
+        currentFree = { type: 'freehand', color: colorInput.value, size: parseInt(sizeInput.value, 10) || 2, points: [] };
+        currentFree.points.push(p);
+      } else {
+        drawing = true;
+        currentShape = { type: shapeType.value, startX: p.x, startY: p.y, size: parseInt(sizeInput.value, 10) || 40, color: colorInput.value };
+      }
+    });
+
+    canvas.addEventListener('mousemove', e => {
+      const p = canvasPos(e);
+      if (drawing && modeSelect.value === 'freehand' && currentFree) {
+        currentFree.points.push(p); redraw(); drawFreehand(currentFree);
+      } else if (drawing && currentShape) {
+        const dx = p.x - currentShape.startX; const dy = p.y - currentShape.startY;
+        const r = Math.sqrt(dx * dx + dy * dy);
+        currentShape.size = Math.max(1, Math.round(r));
+        redraw();
+        drawShapePreview(currentShape);
+      }
+    });
+
+    window.addEventListener('mouseup', e => {
+      const p = canvasPos(e);
+      if (drawing && modeSelect.value === 'freehand' && currentFree) {
+        currentFree.name = ('dibuix ' + (objects.filter(o => o.type === 'freehand').length + 1));
+        addObject(currentFree); currentFree = null;
+      } else if (drawing && currentShape) {
+        const s = currentShape.size || (parseInt(sizeInput.value, 10) || 40);
+        const o = { type: currentShape.type, x: currentShape.startX, y: currentShape.startY, size: s, color: currentShape.color };
+        addObject(o); currentShape = null;
+      }
+      drawing = false;
+    });
+
+    canvas.addEventListener('touchstart', e => { e.preventDefault(); if (modeSelect.value === 'freehand') { drawing = true; currentFree = { type: 'freehand', color: colorInput.value, size: parseInt(sizeInput.value, 10) || 2, points: [] }; const t = e.touches[0]; const p = canvasPos(t); currentFree.points.push(p); } });
+    canvas.addEventListener('touchmove', e => { e.preventDefault(); if (drawing && currentFree) { const t = e.touches[0]; const p = canvasPos(t); currentFree.points.push(p); redraw(); drawFreehand(currentFree); } });
+    canvas.addEventListener('touchend', e => { if (drawing && currentFree) { currentFree.name = ('dibuix ' + (objects.filter(o => o.type === 'freehand').length + 1)); addObject(currentFree); currentFree = null; } drawing = false; });
+
+    document.getElementById('addCenter').addEventListener('click', () => { const s = parseInt(sizeInput.value, 10) || 40; const o = { type: shapeType.value, x: canvas.width / 2, y: canvas.height / 2, size: s, color: colorInput.value }; addObject(o); });
+    document.getElementById('clearAll').addEventListener('click', () => { if (confirm('Clear all objects?')) clearAll(); });
+
+    const inputW = document.getElementById('inputWidth');
+    const inputH = document.getElementById('inputHeight');
+    document.getElementById('applySize').addEventListener('click', () => {
+      const w = Math.max(100, Math.min(2000, parseInt(inputW.value) || currentWidth));
+      const h = Math.max(100, Math.min(2000, parseInt(inputH.value) || currentHeight));
+      const sx = w / currentWidth; const sy = h / currentHeight;
+      objects.forEach(o => { o.x = o.x * sx; o.y = o.y * sy; if (o.type === 'freehand' && o.points) o.points.forEach(p => { p.x = p.x * sx; p.y = p.y * sy; }); });
+      canvas.width = w; canvas.height = h; currentWidth = w; currentHeight = h;
+      inputW.value = w; inputH.value = h;
+      redraw();
+    });
+
+    document.getElementById('resetSize').addEventListener('click', () => {
+      const w = (cfg.initialWidth || canvas.width);
+      const h = (cfg.initialHeight || canvas.height);
+      inputW.value = w; inputH.value = h;
+      const sx = w / currentWidth; const sy = h / currentHeight;
+      objects.forEach(o => { o.x = o.x * sx; o.y = o.y * sy; if (o.type === 'freehand' && o.points) o.points.forEach(p => { p.x = p.x * sx; p.y = p.y * sy; }); });
+      canvas.width = w; canvas.height = h; currentWidth = w; currentHeight = h; inputW.value = w; inputH.value = h; redraw();
+    });
+
+    // Save button handler: serialize current canvas objects and post to server
+    const saveBtn = document.getElementById('saveBtn');
+    const canvasNameDisplay = document.getElementById('canvasNameDisplay');
+    const canvasNameInput = document.getElementById('canvasNameInput');
+
+    // Load filename from URL if present
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('loadFile')) {
+      const filename = urlParams.get('loadFile');
+      // Remove extension and set as canvas name
+      const name = filename.replace(/\.[^/.]+$/, "");
+      canvasNameDisplay.textContent = name;
+      canvasNameInput.value = name;
     }
+
+    if (saveBtn) {
+      saveBtn.addEventListener('click', () => {
+        // assemble payload
+        const payload = { width: canvas.width, height: canvas.height, objects: objects };
+        // get name from the title field
+        let name = canvasNameDisplay.textContent;
+
+        fetch('/saveCanvas?name=' + encodeURIComponent(name), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+          body: JSON.stringify(payload)
+        }).then(r => r.json()).then(j => {
+          if (j && j.status === 'ok') {
+            alert('Canvas saved as ' + j.file);
+            // store current save filename if needed
+            currentSaveFile = j.file;
+          } else {
+            alert('Save failed');
+          }
+        }).catch(err => { console.error(err); alert('Save request failed'); });
+      });
+    }
+
+    const settingsToggle = document.getElementById('settingsToggle');
+    const sizePanel = document.getElementById('sizePanel');
+    if (settingsToggle && sizePanel) {
+      sizePanel.style.display = 'none';
+      settingsToggle.addEventListener('click', () => { sizePanel.style.display = (sizePanel.style.display === 'none') ? 'block' : 'none'; });
+    }
+
+    if (inputW) inputW.value = cfg.initialWidth || currentWidth;
+    if (inputH) inputH.value = cfg.initialHeight || currentHeight;
+
   });
-});
+})();

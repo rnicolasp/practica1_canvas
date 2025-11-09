@@ -9,7 +9,7 @@ public class CanvasDAO {
     private static final List<Canvas> canvasDatabase = new ArrayList<>();
     private static final AtomicInteger idCounter = new AtomicInteger(1);
 
-    public static synchronized String save(String user, String name, String content, String fileParam) {
+    public static String save(String user, String name, String content, String fileParam) {
         String id = String.valueOf(idCounter.getAndIncrement());
         String filename = name.replaceAll("\\s+", "_") + "_" + id + ".json";
         
