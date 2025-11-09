@@ -9,13 +9,13 @@ public class CanvasDAO {
     private static final List<Canvas> canvasDatabase = new ArrayList<>();
     private static final AtomicInteger idCounter = new AtomicInteger(1);
 
-    public static String save(String user, String name, String content, String fileParam) {
+    public static String save(String user, String name, String content) {
         String id = String.valueOf(idCounter.getAndIncrement());
         String filename = name.replaceAll("\\s+", "_") + "_" + id + ".json";
         
         Canvas canvas = new Canvas(id, user, name, content, filename);
         canvasDatabase.add(canvas);
-        return filename;
+        return name;
     }
 
     public static List<Canvas> list(String user) {
@@ -28,13 +28,13 @@ public class CanvasDAO {
         return userCanvas;
     }
 
-    public static boolean delete(String user, String filename) {
-        return canvasDatabase.removeIf(canvas -> 
-            user.equals(canvas.getOwner()) && filename.equals(canvas.getFilename())
+    public static void delete(String user, String filename) {
+        canvasDatabase.removeIf(canvas ->
+                user.equals(canvas.getOwner()) && filename.equals(canvas.getFilename())
         );
     }
 
-    public static String loadPayload(String user, String filename) {
+    public static String loadCanvas(String user, String filename) {
         for (Canvas canvas : canvasDatabase) {
             if (user.equals(canvas.getOwner()) && filename.equals(canvas.getFilename())) {
                 return canvas.getContent();

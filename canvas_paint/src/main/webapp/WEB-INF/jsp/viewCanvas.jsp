@@ -18,7 +18,7 @@
         <a href="${pageContext.request.contextPath}/profile"><button>Mi Perfil</button></a>
       </div>
       <hr>
-      <h2 class="center">Visualizador de Canvas</h2>
+      <h2 class="center">Lienzo de ${user}</h2>
 
       <c:choose>
         <%-- Comprobar si el servlet encontró los datos del canvas --%>
@@ -28,7 +28,6 @@
           </div>
 
           <script>
-            // Incrustamos los datos JSON pasados desde el servlet
             const canvasData = ${canvasData};
 
             (function(){
@@ -36,8 +35,6 @@
               const canvas = document.getElementById('viewOnlyCanvas');
               if (!canvas) return;
               const ctx = canvas.getContext('2d');
-
-              // --- Funciones de dibujo (adaptadas de canvas-app.js) ---
 
               function drawStar(ctx,x,y,r,points){
                 const outer=r, inner=r*0.45, step=Math.PI/points;
@@ -85,18 +82,14 @@
                 ctx.closePath();
                 ctx.restore();
               }
-              // --- Fin funciones de dibujo ---
 
               function redraw(data){
-                // Ajustar el tamaño del canvas según los datos guardados
                 canvas.width = data.width || 800;
                 canvas.height = data.height || 600;
 
-                // Fondo blanco
                 ctx.fillStyle = '#fff';
                 ctx.fillRect(0,0,canvas.width, canvas.height);
 
-                // Dibujar cada objeto
                 if (data.objects && Array.isArray(data.objects)) {
                   data.objects.forEach(o => {
                     if (o.type === 'freehand') drawFreehand(o);
@@ -105,7 +98,6 @@
                 }
               }
 
-              // Dibujo inicial al cargar la página
               if (canvasData) {
                 redraw(canvasData);
               }

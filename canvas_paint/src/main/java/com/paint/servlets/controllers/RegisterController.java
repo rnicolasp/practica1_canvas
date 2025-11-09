@@ -27,9 +27,17 @@ public class RegisterController extends HttpServlet {
         String user = req.getParameter("user");
         String password = req.getParameter("password");
         UserService userService = new UserService();
+
+        if (password == null || password.trim().length() < 5) {
+            req.setAttribute("message", "La contrasenya ha de tenir almenys 5 caràcters");
+            req.getRequestDispatcher("WEB-INF/jsp/register.jsp").forward(req, resp);
+            return;
+        }
+
         boolean userExists = userService.userExists(user);
         if (userExists) {
-            req.setAttribute("message","User already exists");
+            req.setAttribute("message", "Usuari ja existeix");
+            req.getRequestDispatcher("WEB-INF/jsp/register.jsp").forward(req, resp);
             return;
         } else {
             userService.registerUser(name, user, password);

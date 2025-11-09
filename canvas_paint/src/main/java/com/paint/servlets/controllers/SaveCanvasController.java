@@ -1,6 +1,6 @@
 package com.paint.servlets.controllers;
 
-import com.paint.servlets.DAOS.CanvasDAO;
+import com.paint.servlets.services.CanvasService;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 @WebServlet("/saveCanvas")
 public class SaveCanvasController extends HttpServlet {
+    private final CanvasService canvasService = new CanvasService();
     
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -28,7 +29,7 @@ public class SaveCanvasController extends HttpServlet {
         if (name == null || name.trim().isEmpty()) {
             name = "Mi Canvas";
         }
-        String savedFilename = CanvasDAO.save(user, name, content, null);
+        String savedFilename = canvasService.saveCanvas(user, name, content, null);
 
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
@@ -43,11 +44,11 @@ public class SaveCanvasController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
-            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.sendRedirect("/login");
             return;
         }
 
-        String content = CanvasDAO.loadPayload(
+        String content = canvasService.loadCanvasContent(
             (String) session.getAttribute("user"),
             req.getParameter("file")
         );
@@ -56,7 +57,7 @@ public class SaveCanvasController extends HttpServlet {
             resp.setContentType("application/json");
             resp.getWriter().write(content);
         } else {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            resp.sendRedirect("/login");
         }
     }
 }

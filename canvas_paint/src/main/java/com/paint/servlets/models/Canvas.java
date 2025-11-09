@@ -15,7 +15,6 @@ public class Canvas {
         this.filename = filename;
     }
 
-    // Getters
     public String getId() { return id; }
     public String getOwner() { return owner; }
     public String getName() { return name; }

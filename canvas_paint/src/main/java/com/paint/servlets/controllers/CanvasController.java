@@ -19,7 +19,6 @@ public class CanvasController extends HttpServlet {
             return;
         }
 
-        // Establecer tamaño por defecto del canvas
         req.setAttribute("width", 800);
         req.setAttribute("height", 600);
 
