@@ -24,12 +24,13 @@ public class LoginController  extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String user = req.getParameter("user");
         String password = req.getParameter("password");
+        String userNoCaps = user.toLowerCase();
 
     UserService userService = new UserService();
-    boolean userExists = userService.checkUser(user, password);
+    boolean userExists = userService.checkUser(userNoCaps, password);
         if (userExists) {
             HttpSession session = req.getSession();
-            session.setAttribute("user", user);
+            session.setAttribute("user", userNoCaps);
             resp.sendRedirect("/home");
             return;
 

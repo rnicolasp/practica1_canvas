@@ -25,6 +25,7 @@ public class RegisterController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String name = req.getParameter("name");
         String user = req.getParameter("user");
+        String userNoCaps = user.toLowerCase();
         String password = req.getParameter("password");
         UserService userService = new UserService();
 
@@ -34,13 +35,13 @@ public class RegisterController extends HttpServlet {
             return;
         }
 
-        boolean userExists = userService.userExists(user);
+        boolean userExists = userService.userExists(userNoCaps);
         if (userExists) {
             req.setAttribute("message", "Usuari ja existeix");
             req.getRequestDispatcher("WEB-INF/jsp/register.jsp").forward(req, resp);
             return;
         } else {
-            userService.registerUser(name, user, password);
+            userService.registerUser(name, userNoCaps, password);
         }
 
         req.getRequestDispatcher("WEB-INF/jsp/login.jsp")
