@@ -14,7 +14,7 @@ public class DeleteCanvasController extends HttpServlet {
     private final CanvasService canvasService = new CanvasService();
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession(false);
+        HttpSession session = req.getSession();
         if (session == null) {
             resp.sendRedirect("/login");
             return;
@@ -22,11 +22,11 @@ public class DeleteCanvasController extends HttpServlet {
         
         String user = (String) session.getAttribute("user");
         String filename = req.getParameter("file");
-        
+
         if (filename != null && !filename.isEmpty()) {
             canvasService.deleteCanvas(user, filename);
         }
-        
+
         resp.sendRedirect(req.getContextPath() + "/profile");
     }
 }

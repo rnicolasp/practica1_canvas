@@ -16,18 +16,18 @@ public class SaveCanvasController extends HttpServlet {
     
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("user") == null) {
-            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        HttpSession session = req.getSession();
+        String user = (String) session.getAttribute("user");
+        if (user == null) {
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
-        String user = (String) session.getAttribute("user");
         String content = req.getReader().lines().collect(Collectors.joining());
         String name = req.getParameter("name");
         
         if (name == null || name.trim().isEmpty()) {
-            name = "Mi Canvas";
+            name = "sin_nombre";
         }
         String savedFilename = canvasService.saveCanvas(user, name, content, null);
 
@@ -42,9 +42,10 @@ public class SaveCanvasController extends HttpServlet {
     
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("user") == null) {
-            resp.sendRedirect("/login");
+        HttpSession session = req.getSession();
+        String user = (String) session.getAttribute("user");
+        if (user == null) {
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 

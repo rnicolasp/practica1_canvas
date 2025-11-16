@@ -135,16 +135,15 @@
       canvas.width = w; canvas.height = h; currentWidth = w; currentHeight = h; inputW.value = w; inputH.value = h; redraw();
     });
 
-    // Save button handler: serialize current canvas objects and post to server
+
     const saveBtn = document.getElementById('saveBtn');
     const canvasNameDisplay = document.getElementById('canvasNameDisplay');
     const canvasNameInput = document.getElementById('canvasNameInput');
 
-    // Load filename from URL if present
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('loadFile')) {
       const filename = urlParams.get('loadFile');
-      // Remove extension and set as canvas name
+
       const name = filename.replace(/\.[^/.]+$/, "");
       canvasNameDisplay.textContent = name;
       canvasNameInput.value = name;
@@ -152,9 +151,12 @@
 
     if (saveBtn) {
       saveBtn.addEventListener('click', () => {
-        // assemble payload
-        const payload = { width: canvas.width, height: canvas.height, objects: objects };
-        // get name from the title field
+        const payload = { 
+          width: canvas.width, 
+          height: canvas.height, 
+          objects: objects 
+        
+        };
         let name = canvasNameDisplay.textContent;
 
         fetch('/saveCanvas?name=' + encodeURIComponent(name), {
@@ -163,13 +165,12 @@
           body: JSON.stringify(payload)
         }).then(r => r.json()).then(j => {
           if (j && j.status === 'ok') {
-            alert('Canvas saved as ' + j.file);
-            // store current save filename if needed
+            alert('Canvas guardado como ' + j.file);
             currentSaveFile = j.file;
           } else {
-            alert('Save failed');
+            alert('No se ha podido guardar');
           }
-        }).catch(err => { console.error(err); alert('Save request failed'); });
+        }).catch(err => { console.error(err); alert('Request de guardado ha fallado'); });
       });
     }
 
