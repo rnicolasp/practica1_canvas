@@ -1,4 +1,3 @@
-/* Minimal shared stylesheet */
 body {
 	font-family: Arial, Helvetica, sans-serif;
 	background: #f6f8fa;
@@ -44,19 +43,6 @@ input[type="number"], input[type="text"], input[type="password"], select {
 /* column form helper */
 .form-column { display:flex; flex-direction:column; gap:10px; max-width:320px; margin: 0 auto; }
 .form-column input[type="text"], .form-column input[type="password"], .form-column input[type="number"] { width:100%; box-sizing:border-box; }
-
-.canvas-wrap { border: 1px solid #ccc; display:inline-block; }
-
-.canvas-area { display:flex; gap:16px; align-items:flex-start; flex-wrap:nowrap; }
-.canvas-area > div:first-child { flex: 1; }
-.sidebar { width: 300px; display:flex; flex-direction:column; }
-.sidebar .card { display:flex; flex-direction:column; }
-.sidebar .form-column { max-width: none; margin: 0; }
-.object-list { list-style:none; padding:0 6px; margin:0; max-height:420px; overflow:auto; flex:1; }
-.object-item { display:flex; justify-content:space-between; align-items:center; padding:6px 4px; border-bottom:1px solid #eee; }
-.object-left { display:flex; flex-direction:column; }
-.object-right button { margin-left:6px; }
-.object-name input { width:160px; }
 
 .small-muted { color: #666; font-size: 0.9em }
 
@@ -107,4 +93,3 @@ input[type="number"], input[type="text"], input[type="password"], select {
     flex: 1;
     min-width: 80px;
 }
-

@@ -21,10 +21,10 @@ public class DeleteCanvasController extends HttpServlet {
         }
         
         String user = (String) session.getAttribute("user");
-        String filename = req.getParameter("file");
+        String id = req.getParameter("id");
 
-        if (filename != null && !filename.isEmpty()) {
-            canvasService.deleteCanvas(user, filename);
+        if (id != null && !id.isEmpty()) {
+            canvasService.deleteCanvas(user, id);
         }
 
         resp.sendRedirect(req.getContextPath() + "/profile");

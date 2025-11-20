@@ -1,6 +1,6 @@
 package com.paint.servlets.controllers;
 
-import com.paint.servlets.DAOS.CanvasDAO;
+import com.paint.servlets.services.CanvasService; // Importar servicio
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,6 +12,8 @@ import java.io.IOException;
 
 @WebServlet("/viewCanvas")
 public class ViewCanvasController extends HttpServlet {
+    private final CanvasService canvasService = new CanvasService();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
@@ -21,13 +23,18 @@ public class ViewCanvasController extends HttpServlet {
             return;
         }
 
-        String fileToLoad = req.getParameter("loadFile");
-        if (fileToLoad == null || fileToLoad.trim().isEmpty()) {
+        String loadId = req.getParameter("loadId");
+        if (loadId == null || loadId.trim().isEmpty()) {
             resp.sendRedirect(req.getContextPath() + "/profile");
             return;
         }
 
-        String canvasData = CanvasDAO.loadCanvas(fileToLoad);
+        String canvasData = canvasService.loadCanvasContentById(loadId);
+
+        if (canvasData == null) {
+            resp.sendRedirect(req.getContextPath() + "/profile");
+            return;
+        }
 
         req.setAttribute("canvasData", canvasData);
         req.getRequestDispatcher("WEB-INF/jsp/viewCanvas.jsp").forward(req, resp);

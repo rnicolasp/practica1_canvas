@@ -21,7 +21,6 @@
       <h2 class="center">Lienzo de ${user}</h2>
 
       <c:choose>
-        <%-- Comprobar si el servlet encontró los datos del canvas --%>
         <c:when test="${not empty canvasData}">
           <div style="display:flex; justify-content:center; padding:10px; background:#f4f4f4; border:1px solid #ccc; border-radius: 6px; overflow: auto;">
             <canvas id="viewOnlyCanvas" style="background:#fff; display:block;"></canvas>
@@ -105,7 +104,6 @@
           </script>
         </c:when>
         <c:otherwise>
-          <%-- Mensaje si el canvas no se encontró o no pertenece al usuario --%>
           <p class="center small-muted">Canvas no encontrado o no tienes permiso para verlo.</p>
         </c:otherwise>
       </c:choose>

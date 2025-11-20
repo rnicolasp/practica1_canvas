@@ -1,53 +1,94 @@
 package com.paint.servlets.DAOS;
 
-import com.paint.servlets.models.User;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class UserDAO {
 
-    private final static List<User> userDatabase = new ArrayList<>();
-
-    static {
-        User localAdmin = new User("Elena","admin","admin");
-        userDatabase.add(localAdmin);
-    }
-
     public static boolean checkUser(String username, String password) {
         String userNoCaps = username.toLowerCase();
-        for (User user : userDatabase) {
-            if (user.getUser().equals(userNoCaps)) {
-                return user.getPassword().equals(password);
+        String sql = "SELECT 1 FROM users WHERE user = ? AND password = ?";
+
+        System.out.println("Executing SQL: " + sql);
+        System.out.println("  -> params: [user=" + userNoCaps + ", password=" + password + "]");
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, userNoCaps);
+            ps.setString(2, password);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
-        return false;
     }
 
-    public static boolean userExists(String username){
+    public static boolean userExists(String username) {
         String userNoCaps = username.toLowerCase();
-        for (User user : userDatabase){
-            if (user.getUser().equals(userNoCaps)){
-                return  true;
+        String sql = "SELECT 1 FROM users WHERE user = ?";
+
+        System.out.println("Executing SQL: " + sql);
+        System.out.println("  -> params: [user=" + userNoCaps + "]");
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, userNoCaps);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
-        return false;
     }
 
-    public static String getName(String username){
-        String result = "";
-        for (User user : userDatabase){
-            if (user.getUser().equals(username)) {
-                result = user.getName();
-                break;
+    public static String getName(String username) {
+        String sql = "SELECT name FROM users WHERE user = ?";
+
+        System.out.println("Executing SQL: " + sql);
+        System.out.println("  -> params: [user=" + username + "]");
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, username);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("name");
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return result;
+        return "";
     }
 
     public static void registerUser(String name, String user, String password) {
         String userNoCaps = user.toLowerCase();
-        User nouRegistre = new User(name,userNoCaps,password);
-        userDatabase.add(nouRegistre);
+        String sql = "INSERT INTO users (name, user, password) VALUES (?, ?, ?)";
+
+        System.out.println("Executing SQL: " + sql);
+        System.out.println("  -> params: [name=" + name + ", user=" + userNoCaps + ", password=" + password + "]");
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, name);
+            ps.setString(2, userNoCaps);
+            ps.setString(3, password);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

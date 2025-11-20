@@ -9,20 +9,24 @@ public class CanvasService {
     public CanvasService() {
     }
 
-    public String saveCanvas(String user, String name, String content, String fileParam) {
-        return CanvasDAO.save(user, name, content);
+    public String saveCanvas(String user, String name, String content, String id, int objectCount) {
+        return CanvasDAO.save(user, name, content, id, objectCount);
     }
 
     public List<Canvas> listUserCanvas(String user) {
         return CanvasDAO.list(user);
     }
 
-    public void deleteCanvas(String user, String filename) {
-        CanvasDAO.delete(user, filename);
+    public void deleteCanvas(String user, String id) {
+        CanvasDAO.delete(user, id);
     }
 
-    public String loadCanvasContent(String user, String filename) {
-        return CanvasDAO.loadCanvas(filename);
+    public Canvas getCanvasById(String id) {
+        return CanvasDAO.getCanvasById(id);
+    }
+
+    public String loadCanvasContentById(String id) {
+        return CanvasDAO.loadCanvasContentById(id);
     }
 
     public List<Canvas> listAllCanvas() {

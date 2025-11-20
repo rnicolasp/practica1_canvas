@@ -1,6 +1,7 @@
 <%@ page isELIgnored="false" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/fmt" prefix = "fmt" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -32,9 +33,11 @@
             <div class="canvas-info">
               <p><strong>Creado por:</strong> ${canvas.owner}</p>
               <p><strong>ID:</strong> ${canvas.id}</p>
+              <p><small><strong>Creado:</strong> <fmt:formatDate value="${canvas.dateCreated}" pattern="dd/MM/yyyy HH:mm" /></small></p>
+              <p><small><strong>Modificado:</strong> <fmt:formatDate value="${canvas.dateModified}" pattern="dd/MM/yyyy HH:mm" /></small></p>
             </div>
             <div class="canvas-actions">
-              <a href="${pageContext.request.contextPath}/viewCanvas?loadFile=${canvas.filename}"><button>Cargar</button></a>
+                <a href="${pageContext.request.contextPath}/canvas?loadId=${canvas.id}"><button>Cargar</button></a>
             </div>
           </div>
         </c:forEach>
