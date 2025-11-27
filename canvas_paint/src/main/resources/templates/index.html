@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ePaint</title>
+    <link rel="stylesheet" th:href="@{/css/home.css}">
+</head>
+<body>
+<div class="page-wrapper">
+    <div class="card center">
+        <h2 class="center">ePaint</h2>
+        <div class="actions">
+            <a th:href="@{/login}"><button>Iniciar Sesión</button></a>
+            <a th:href="@{/register}"><button>Registrarse</button></a>
+        </div>
+    </div>
+</div>
+<script>
+    windows.location.href = "/login"
+</script>
+</body>
+</html>

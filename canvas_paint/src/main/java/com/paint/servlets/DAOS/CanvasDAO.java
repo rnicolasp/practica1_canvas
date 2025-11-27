@@ -21,91 +21,14 @@ public class CanvasDAO {
         return new Canvas(id, owner, name, content, filename, dateCreated, dateModified, objectCount);
     }
 
-    public static Canvas getCanvasById(String id) {
-        String sql = "SELECT * FROM canvas WHERE id = ?";
+    //public static Canvas getCanvasById(String id) {
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, Integer.parseInt(id));
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSetToCanvas(rs);
-                }
-            }
-        } catch (SQLException | NumberFormatException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+    //}
 
     public static String save(String user, String name, String content, String id, int objectCount) {
-
-        if (id != null && !id.isEmpty()) {
-            String sql = "UPDATE canvas SET name = ?, content = ?, objectCount = ?, filename = ? " +
-                    "WHERE id = ? AND owner = ?";
-
-            try (Connection conn = DBConnection.getConnection();
-                 PreparedStatement ps = conn.prepareStatement(sql)) {
-
-                String newFilename = name.replaceAll("\\s+", "_") + "_" + id + ".json";
-
-                ps.setString(1, name);
-                ps.setString(2, content);
-                ps.setInt(3, objectCount);
-                ps.setString(4, newFilename);
-                ps.setInt(5, Integer.parseInt(id));
-                ps.setString(6, user);
-
-                int rowsAffected = ps.executeUpdate();
-                return (rowsAffected > 0) ? id : null;
-
-            } catch (SQLException | NumberFormatException e) {
-                e.printStackTrace();
-                return null;
-            }
-
-        } else {
-            String sqlInsert = "INSERT INTO canvas (owner, name, content, filename, objectCount) " +
-                    "VALUES (?, ?, ?, ?, ?)";
-
-            try (Connection conn = DBConnection.getConnection();
-                 PreparedStatement ps = conn.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS)) {
-
-                ps.setString(1, user);
-                ps.setString(2, name);
-                ps.setString(3, content);
-                ps.setString(4, "temp");
-                ps.setInt(5, objectCount);
-
-                int rowsAffected = ps.executeUpdate();
-                if (rowsAffected == 0) return null;
-
-                try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        int newId = generatedKeys.getInt(1);
-                        String newFilename = name.replaceAll("\\s+", "_") + "_" + newId + ".json";
-
-                        String sqlUpdate = "UPDATE canvas SET filename = ? WHERE id = ?";
-                        try (PreparedStatement updatePs = conn.prepareStatement(sqlUpdate)) {
-                            updatePs.setString(1, newFilename);
-                            updatePs.setInt(2, newId);
-                            updatePs.executeUpdate();
-                        }
-
-                        return String.valueOf(newId);
-                    } else {
-                        return null;
-                    }
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
+        return "";
     }
-
+/*
     public static List<Canvas> list(String user) {
         List<Canvas> userCanvas = new ArrayList<>();
         String sql = "SELECT * FROM canvas WHERE owner = ?";
@@ -176,4 +99,6 @@ public class CanvasDAO {
         }
         return allCanvas;
     }
+
+ */
 }

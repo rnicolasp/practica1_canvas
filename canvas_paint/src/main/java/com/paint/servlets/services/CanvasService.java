@@ -2,10 +2,13 @@ package com.paint.servlets.services;
 
 import com.paint.servlets.DAOS.CanvasDAO;
 import com.paint.servlets.models.Canvas;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
+@Service
 public class CanvasService {
-
+/*
     public CanvasService() {
     }
 
@@ -32,4 +35,6 @@ public class CanvasService {
     public List<Canvas> listAllCanvas() {
         return CanvasDAO.listAll();
     }
+
+ */
 }

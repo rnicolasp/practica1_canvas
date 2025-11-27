@@ -2,30 +2,29 @@ package com.paint.servlets.controllers;
 
 import com.paint.servlets.models.Canvas;
 import com.paint.servlets.services.CanvasService;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
+@Controller
+public class CanvasController {
 
-@WebServlet("/canvas")
-public class CanvasController extends HttpServlet {
+    @Autowired
+    private CanvasService canvasService;
+    /*
 
-    private final CanvasService canvasService = new CanvasService();
+    @GetMapping("/canvas")
+    public String showCanvas(@RequestParam(value = "loadId", required = false) String loadId,
+                             HttpSession session,
+                             Model model) {
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession();
         String user = (String) session.getAttribute("user");
         if (user == null) {
-            resp.sendRedirect(req.getContextPath() + "/login");
-            return;
+            return "redirect:/login";
         }
-
-        String loadId = req.getParameter("loadId");
 
         if (loadId != null && !loadId.trim().isEmpty()) {
             Canvas canvas = canvasService.getCanvasById(loadId);
@@ -34,24 +33,25 @@ public class CanvasController extends HttpServlet {
                 boolean isOwner = user.equals(canvas.getOwner());
 
                 if (isOwner) {
-                    req.setAttribute("loadId", canvas.getId());
-                    req.setAttribute("canvasName", canvas.getName());
-                    req.setAttribute("canvasData", canvas.getContent());
-                    req.setAttribute("isOwner", true);
+                    model.addAttribute("loadId", canvas.getId());
+                    model.addAttribute("canvasName", canvas.getName());
+                    model.addAttribute("canvasData", canvas.getContent());
+                    model.addAttribute("isOwner", true);
                 } else {
-                    resp.sendRedirect(req.getContextPath() + "/viewCanvas?loadId=" + canvas.getId());
-                    return;
+                    return "redirect:/viewCanvas?loadId=" + canvas.getId();
                 }
             } else {
-                resp.sendRedirect(req.getContextPath() + "/profile");
-                return;
+                return "redirect:/profile";
             }
         } else {
-            req.setAttribute("isOwner", true);
+            model.addAttribute("isOwner", true);
         }
 
-        req.setAttribute("width", 800);
-        req.setAttribute("height", 600);
-        req.getRequestDispatcher("WEB-INF/jsp/canvas.jsp").forward(req, resp);
+        model.addAttribute("width", 800);
+        model.addAttribute("height", 600);
+
+        return "canvas";
     }
+
+     */
 }
