@@ -1,1 +1,46 @@
-<h1> pepinillos y donuts mis favoritos yummmm</h1>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ePaint</title>
+    <link rel="stylesheet" th:href="@{/css/home.css}">
+</head>
+<body>
+<div class="page-wrapper">
+    <div class="card">
+        <h2 class="center">ePaint</h2>
+        <div>
+            <p class="small-muted">Bienvenido, <strong th:text="${user}">Usuario</strong></p>
+            <div class="actions center">
+                <a th:href="@{/profile}"><button>Mi Perfil</button></a>
+                <a th:href="@{/canvas}"><button>Crear nuevo lienzo</button></a>
+                <a th:href="@{/logout}"><button>Cerrar sesión</button></a>
+            </div>
+        </div>
+
+        <hr>
+        <h3 class="center">Todos los Lienzos</h3>
+        <div class="canvas-grid">
+            <div class="canvas-card" th:each="canvas : ${allCanvas}">
+                <h4 th:text="${canvas.name}">Nombre del Lienzo</h4>
+                <div class="canvas-info">
+                    <p><strong>Creado por:</strong> <span th:text="${canvas.owner}">Propietario</span></p>
+                    <p><strong>ID:</strong> <span th:text="${canvas.id}">ID</span></p>
+
+                    <p><small><strong>Creado:</strong>
+                        <span th:text="${#dates.format(canvas.dateCreated, 'dd/MM/yyyy HH:mm')}">01/01/2024</span>
+                    </small></p>
+                    <p><small><strong>Modificado:</strong>
+                        <span th:text="${#dates.format(canvas.dateModified, 'dd/MM/yyyy HH:mm')}">01/01/2024</span>
+                    </small></p>
+                </div>
+                <div class="canvas-actions">
+                    <a th:href="@{/canvas(loadId=${canvas.id})}"><button>Cargar</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

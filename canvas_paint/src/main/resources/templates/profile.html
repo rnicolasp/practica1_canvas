@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Perfil</title>
+    <link rel="stylesheet" th:href="@{/css/home.css}">
+</head>
+<body>
+<div class="page-wrapper">
+    <div class="card">
+        <h2 class="center">Perfil</h2>
+        <p>
+            <strong>Usuario:</strong> <span th:text="${name}">Name</span> (<span th:text="${user}">User</span>)
+        </p>
+
+        <div class="actions center">
+            <a th:href="@{/home}"><button>Inicio</button></a>
+        </div>
+        <hr>
+        <h3 class="center">Lienzos guardados</h3>
+        <div class="canvas-grid" th:if="${canvasUser != null and !canvasUser.isEmpty()}">
+
+            <div class="canvas-card" th:each="save : ${canvasUser}">
+
+                <h4 th:text="${save.name}">Nombre del Lienzo</h4>
+
+                <div class="canvas-info">
+                    <p><strong>ID:</strong> <span th:text="${save.id}">ID</span></p>
+                    <p><strong>Propietario:</strong> <span th:text="${save.owner}">Propietario</span></p>
+
+                    <p><small><strong>Creado:</strong>
+                        <span th:text="${#dates.format(save.dateCreated, 'dd/MM/yyyy HH:mm')}">Fecha</span>
+                    </small></p>
+
+                    <p><small><strong>Modificado:</strong>
+                        <span th:text="${#dates.format(save.dateModified, 'dd/MM/yyyy HH:mm')}">Fecha</span>
+                    </small></p>
+                </div>
+
+                <div class="canvas-actions">
+                    <a th:href="@{/canvas(loadId=${save.id})}"><button>Cargar</button></a>
+
+                    <form method="post" th:action="@{/deleteCanvas}" style="display:inline" onsubmit="return confirm('¿Eliminar este lienzo guardado?');">
+                        <input type="hidden" name="id" th:value="${save.id}" />
+                        <button type="submit">Eliminar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <p class="small-muted center" th:unless="${canvasUser != null and !canvasUser.isEmpty()}">
+            No hay lienzos guardados.
+        </p>
+    </div>
+</body>
+</html>

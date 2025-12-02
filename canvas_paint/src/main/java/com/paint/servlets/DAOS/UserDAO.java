@@ -7,6 +7,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class UserDAO {
 
@@ -21,9 +23,13 @@ public class UserDAO {
         );
     }
 
-    public static boolean checkUser(String username, String password) {
+    public boolean checkUser(String username, String password) {
         String sql = "SELECT * FROM users WHERE user = ? AND password = ?";
-        if ()
+        List<User> users = jdbcTemplate.query(sql, rowMapper(), username, password);
+        if (!users.isEmpty()) {
+            return true;
+        }
+        return false;
     }
 
     public static boolean userExists(String username) {
