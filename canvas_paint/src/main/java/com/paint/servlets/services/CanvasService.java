@@ -25,11 +25,8 @@ public class CanvasService {
         canvasDAO.registerCanvas(canvas);
     }
 
-//    public Canvas getCanvasById(int id) {
-//        return canvasDAO.findById(id);
-//    }
-//
-//    public void deleteCanvas(int id) {
-//        canvasDAO.deleteCanvas(id);
-//    }
+    public Canvas getCanvasById(int id) {
+        return canvasDAO.findById(id);
+    }
+
 }

@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -55,5 +56,48 @@ public class indexController {
         model.addAttribute("name", name);
 
         return "profile";
+    }
+
+    @GetMapping("/canvas")
+    private String showCanvas(@RequestParam(value = "id", required = false) int id, HttpSession session, Model model) {
+        String user = (String) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        
+        model.addAttribute("width", 800);
+        model.addAttribute("height", 600);
+        model.addAttribute("isOwner", true);
+{
+            Canvas canvas = canvasService.getCanvasById(id);
+            if (canvas != null) {
+                boolean isOwner = user.equals(canvas.getOwner());
+
+                model.addAttribute("loadId", canvas.getId());
+                model.addAttribute("canvasName", canvas.getName());
+                model.addAttribute("canvasData", canvas.getContent());
+                model.addAttribute("isOwner", isOwner);
+
+                if (!isOwner) {
+                    return "redirect:/canvas?id=" + id;
+                }
+            }
+        }
+
+        return "canvas";
+    }
+
+    @GetMapping("/editor")
+    private String editor(HttpSession session, Model model) {
+        String user = (String) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("width", 600);
+        model.addAttribute("height", 600);
+        model.addAttribute("isOwner", true);
+
+        return "redirect:/editor";
     }
 }

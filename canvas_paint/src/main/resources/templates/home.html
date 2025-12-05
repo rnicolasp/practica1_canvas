@@ -14,7 +14,7 @@
             <p class="small-muted">Bienvenido, <strong th:text="${user}">Usuario</strong></p>
             <div class="actions center">
                 <a th:href="@{/profile}"><button>Mi Perfil</button></a>
-                <a th:href="@{/canvas}"><button>Crear nuevo lienzo</button></a>
+                <a th:href="@{/editor}"><button>Crear nuevo lienzo</button></a>
                 <a th:href="@{/logout}"><button>Cerrar sesión</button></a>
             </div>
         </div>
@@ -36,7 +36,7 @@
                     </small></p>
                 </div>
                 <div class="canvas-actions">
-                    <a th:href="@{/canvas(loadId=${canvas.id})}"><button>Cargar</button></a>
+                    <a th:href="@{/canvas(id=${canvas.id})}"><button>Cargar</button></a>
                 </div>
             </div>
         </div>

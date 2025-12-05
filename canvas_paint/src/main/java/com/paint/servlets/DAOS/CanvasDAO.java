@@ -23,8 +23,8 @@ public class CanvasDAO {
                 rs.getString("owner"),
                 rs.getString("name"),
                 rs.getString("content"),
-                rs.getDate("dateCreated"),
-                rs.getDate("dateModified"),
+                rs.getTimestamp("dateCreated"),
+                rs.getTimestamp("dateModified"),
                 rs.getBoolean("paperBin")
         );
     }
@@ -44,6 +44,11 @@ public class CanvasDAO {
     public List<Canvas> findByOwner(String owner) {
         String sql = "SELECT * FROM canvas WHERE paperBin = false AND owner = ?";
         return jdbcTemplate.query(sql, rowMapper(), owner);
+    }
+
+    public Canvas findById(int id) {
+        String sql = "SELECT * FROM canvas WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, rowMapper(), id);
     }
 
 }

@@ -53,12 +53,12 @@
 
       objects.forEach(i => {
         if (i !== selectedObject) {
-          if (i.type === 'freehand') drawFreehand(i); else drawShape(i);
+          if (i.type === 'libre') drawFreehand(i); else drawShape(i);
         }
       });
 
       if (selectedObject) {
-        if (selectedObject.type === 'freehand') drawFreehand(selectedObject); else drawShape(selectedObject);
+        if (selectedObject.type === 'libre') drawFreehand(selectedObject); else drawShape(selectedObject);
         drawSelectionHighlight(selectedObject);
       }
     }
@@ -75,15 +75,15 @@
 
     function getObjectBounds(objecto) {
         let limits = { x: objecto.x, y: objecto.y, width: objecto.size, height: objecto.size };
-        if (objecto.type === 'circle') {
+        if (objecto.type === 'circulo') {
             limits = { x: objecto.x - objecto.size, y: objecto.y - objecto.size, width: objecto.size * 2, height: objecto.size * 2 };
-        } else if (objecto.type === 'square') {
+        } else if (objecto.type === 'cuadrado') {
             limits = { x: objecto.x - objecto.size, y: objecto.y - objecto.size, width: objecto.size * 2, height: objecto.size * 2 };
-        } else if (objecto.type === 'triangle') {
+        } else if (objecto.type === 'triangulo') {
             limits = { x: objecto.x - objecto.size, y: objecto.y - objecto.size, width: objecto.size * 2, height: objecto.size * 2 };
-        } else if (objecto.type === 'star7') {
+        } else if (objecto.type === 'estrella') {
             limits = { x: objecto.x - objecto.size, y: objecto.y - objecto.size, width: objecto.size * 2, height: objecto.size * 2 };
-        } else if (objecto.type === 'freehand') {
+        } else if (objecto.type === 'libre') {
             let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
             objecto.points.forEach(p => {
                 if (p.x < minX) minX = p.x;
@@ -116,21 +116,21 @@
         canvasCont.strokeStyle = figura.color;
         canvasCont.lineWidth = 2;
         const x = figura.x, y = figura.y, s = figura.size;
-        if (figura.type === 'circle') {
+        if (figura.type === 'circulo') {
             canvasCont.beginPath();
             canvasCont.arc(x, y, s, 0, Math.PI * 2);
             canvasCont.fill();
             canvasCont.closePath();
-        } else if (figura.type === 'square') {
+        } else if (figura.type === 'cuadrado') {
             canvasCont.fillRect(x - s, y - s, s * 2, s * 2);
-        } else if (figura.type === 'triangle') {
+        } else if (figura.type === 'triangulo') {
             canvasCont.beginPath();
             canvasCont.moveTo(x, y - s);
             canvasCont.lineTo(x - s, y + s);
             canvasCont.lineTo(x + s, y + s);
             canvasCont.closePath();
             canvasCont.fill();
-        } else if (figura.type === 'star7') {
+        } else if (figura.type === 'estrella') {
             drawStar(canvasCont, x, y, s, 7);
             canvasCont.fill();
         }
@@ -174,21 +174,21 @@
         canvasCont.strokeStyle = o.color;
         canvasCont.lineWidth = 1;
         const x = o.startX, y = o.startY, s = o.size;
-        if (o.type === 'circle') {
+        if (o.type === 'circulo') {
             canvasCont.beginPath();
             canvasCont.arc(x, y, s, 0, Math.PI * 2);
             canvasCont.fill();
             canvasCont.closePath();
-        } else if (o.type === 'square') {
+        } else if (o.type === 'cuadrado') {
             canvasCont.fillRect(x - s, y - s, s * 2, s * 2);
-        } else if (o.type === 'triangle') {
+        } else if (o.type === 'triangulo') {
             canvasCont.beginPath();
             canvasCont.moveTo(x, y - s);
             canvasCont.lineTo(x - s, y + s);
             canvasCont.lineTo(x + s, y + s);
             canvasCont.closePath();
             canvasCont.fill();
-        } else if (o.type === 'star7') {
+        } else if (o.type === 'estrella') {
             drawStar(canvasCont, x, y, s, 7);
             canvasCont.fill();
         }
@@ -216,7 +216,7 @@
         const displayName = document.createElement('div'); displayName.className = 'object-name';
         displayName.innerHTML = '<strong>' + (o.name || (o.type + ' ' + (idx + 1))) + '</strong>';
         const meta = document.createElement('div'); meta.className = 'small';
-        if (o.type === 'freehand') {
+        if (o.type === 'libre') {
              meta.textContent = o.type + ' (' + o.points.length + ' pts)';
         } else {
              meta.textContent = o.type + ' @ ' + Math.round(o.x) + ',' + Math.round(o.y);
@@ -404,14 +404,14 @@
               dragOffsetX = p.x - hitObject.x;
               dragOffsetY = p.y - hitObject.y;
 
-              if (hitObject.type === 'freehand') {
+              if (hitObject.type === 'libre') {
                   dragOffsetX = p.x;
                   dragOffsetY = p.y;
               }
           }
-      } else if (modeSelect.value === 'freehand') {
+      } else if (modeSelect.value === 'libre') {
         drawing = true;
-        currentFree = { type: 'freehand', color: colorInput.value, size: parseInt(sizeInput.value, 10) || 2, points: [] };
+        currentFree = { type: 'libre', color: colorInput.value, size: parseInt(sizeInput.value, 10) || 2, points: [] };
         currentFree.points.push(p);
       } else if (modeSelect.value === 'shape') {
         drawing = true;
@@ -423,7 +423,7 @@
       const p = canvasPos(e);
 
       if (isDragging && selectedObject) {
-          if (selectedObject.type === 'freehand') {
+          if (selectedObject.type === 'libre') {
               const dx = p.x - dragOffsetX;
               const dy = p.y - dragOffsetY;
               selectedObject.points.forEach(pt => {
@@ -438,7 +438,7 @@
           }
           redraw();
 
-      } else if (drawing && modeSelect.value === 'freehand' && currentFree) {
+      } else if (drawing && modeSelect.value === 'libre' && currentFree) {
         currentFree.points.push(p); redraw(); drawFreehand(currentFree);
       } else if (drawing && currentShape) {
         const dx = p.x - currentShape.startX; const dy = p.y - currentShape.startY;
@@ -463,8 +463,8 @@
       }
 
       const p = canvasPos(e);
-      if (drawing && modeSelect.value === 'freehand' && currentFree) {
-        currentFree.name = ('dibuix ' + (objects.filter(o => o.type === 'freehand').length + 1));
+      if (drawing && modeSelect.value === 'libre' && currentFree) {
+        currentFree.name = ('dibuix ' + (objects.filter(o => o.type === 'libre').length + 1));
         addObject(currentFree);
         currentFree = null;
       } else if (drawing && currentShape) {
@@ -476,9 +476,9 @@
       drawing = false;
     });
 
-    canvas.addEventListener('touchstart', e => { e.preventDefault(); if (modeSelect.value === 'freehand') { drawing = true; currentFree = { type: 'freehand', color: colorInput.value, size: parseInt(sizeInput.value, 10) || 2, points: [] }; const t = e.touches[0]; const p = canvasPos(t); currentFree.points.push(p); } });
+    canvas.addEventListener('touchstart', e => { e.preventDefault(); if (modeSelect.value === 'libre') { drawing = true; currentFree = { type: 'libre', color: colorInput.value, size: parseInt(sizeInput.value, 10) || 2, points: [] }; const t = e.touches[0]; const p = canvasPos(t); currentFree.points.push(p); } });
     canvas.addEventListener('touchmove', e => { e.preventDefault(); if (drawing && currentFree) { const t = e.touches[0]; const p = canvasPos(t); currentFree.points.push(p); redraw(); drawFreehand(currentFree); } });
-    canvas.addEventListener('touchend', e => { if (drawing && currentFree) { currentFree.name = ('dibuix ' + (objects.filter(o => o.type === 'freehand').length + 1)); addObject(currentFree); currentFree = null; } drawing = false; });
+    canvas.addEventListener('touchend', e => { if (drawing && currentFree) { currentFree.name = ('dibuix ' + (objects.filter(o => o.type === 'libre').length + 1)); addObject(currentFree); currentFree = null; } drawing = false; });
 
     document.getElementById('addCenter').addEventListener('click', () => { const s = parseInt(sizeInput.value, 10) || 40; const o = { type: shapeType.value, x: canvas.width / 2, y: canvas.height / 2, size: s, color: colorInput.value }; addObject(o); });
     document.getElementById('clearAll').addEventListener('click', clearAll);
@@ -488,7 +488,7 @@
       const w = Math.max(100, Math.min(2000, parseInt(inputW.value) || currentWidth));
       const h = Math.max(100, Math.min(2000, parseInt(inputH.value) || currentHeight));
       const sx = w / currentWidth; const sy = h / currentHeight;
-      objects.forEach(o => { o.x = o.x * sx; o.y = o.y * sy; if (o.type === 'freehand' && o.points) o.points.forEach(p => { p.x = p.x * sx; p.y = p.y * sy; }); });
+      objects.forEach(o => { o.x = o.x * sx; o.y = o.y * sy; if (o.type === 'libre' && o.points) o.points.forEach(p => { p.x = p.x * sx; p.y = p.y * sy; }); });
       canvas.width = w; canvas.height = h; currentWidth = w; currentHeight = h;
       inputW.value = w; inputH.value = h;
       redraw();
@@ -502,7 +502,7 @@
       const h = (CanvasConf.initialHeight || canvas.height);
       inputW.value = w; inputH.value = h;
       const sx = w / currentWidth; const sy = h / currentHeight;
-      objects.forEach(o => { o.x = o.x * sx; o.y = o.y * sy; if (o.type === 'freehand' && o.points) o.points.forEach(p => { p.x = p.x * sx; p.y = p.y * sy; }); });
+      objects.forEach(o => { o.x = o.x * sx; o.y = o.y * sy; if (o.type === 'libre' && o.points) o.points.forEach(p => { p.x = p.x * sx; p.y = p.y * sy; }); });
       canvas.width = w; canvas.height = h; currentWidth = w; currentHeight = h; inputW.value = w; inputH.value = h;
       redraw();
       saveDraft();
@@ -606,7 +606,6 @@
         if (currentCanvasId) {
             url += '&id=' + encodeURIComponent(currentCanvasId);
         }
-        url += '&objectCount=' + objects.length;
 
         fetch(url, {
           method: 'POST',
@@ -645,10 +644,10 @@
         }).catch(err => {
             console.error(err);
             if (autosaveStatus) {
-                autosaveStatus.textContent = "Error de red.";
+                autosaveStatus.textContent = "Error al guardar.";
                 setTimeout(() => { autosaveStatus.style.opacity = "0"; }, 2000);
             }
-            if (showAlert) alert('Request de guardado ha fallado: ' + err.message);
+            if (showAlert) alert('guardado ha fallado: ' + err.message);
         });
     }
 
@@ -660,7 +659,7 @@
         }
 
         if (autosaveStatus) {
-            autosaveStatus.textContent = "Cambios detectados...";
+            autosaveStatus.textContent = "Guardando...";
             autosaveStatus.style.opacity = "1";
         }
 

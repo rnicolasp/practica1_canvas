@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="canvas-actions">
-                    <a th:href="@{/canvas(loadId=${save.id})}"><button>Cargar</button></a>
+                    <a th:href="@{/canvas(id=${save.id})}"><button>Cargar</button></a>
 
                     <form method="post" th:action="@{/deleteCanvas}" style="display:inline" onsubmit="return confirm('¿Eliminar este lienzo guardado?');">
                         <input type="hidden" name="id" th:value="${save.id}" />
