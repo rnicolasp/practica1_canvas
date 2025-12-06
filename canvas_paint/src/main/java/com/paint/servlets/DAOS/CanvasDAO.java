@@ -49,16 +49,16 @@ public class CanvasDAO {
         parametros.put("paperBin", false);
         parametros.put("dateCreated", new Date());
         parametros.put("dateModified", new Date());
-        parametros.put("is_public", false);
+        parametros.put("isPublic", canvas.isPublic());
         parametros.put("version", 1);
 
         Number nuevoId = simpleInsert.executeAndReturnKey(parametros);
         return nuevoId.intValue();
     }
 
-    public void updateCanvas(int id, String content, String name) {
-        String sql = "UPDATE canvas SET content = ?, name = ?, dateModified = ?, version = version + 1 WHERE id = ?";
-        jdbcTemplate.update(sql, content, name, new Timestamp(new Date().getTime()), id);
+    public void updateCanvas(int id, String content, String name, boolean isPublic) {
+        String sql = "UPDATE canvas SET content = ?, name = ?, is_public = ? WHERE id = ?";
+        jdbcTemplate.update(sql, content, name, isPublic, id);
     }
 
     public List<Canvas> findAll() {
@@ -75,5 +75,27 @@ public class CanvasDAO {
         String sql = "SELECT * FROM canvas WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper(), id);
     }
+
+    public void moveToTrash(int id, boolean inTrash) {
+        String sql = "UPDATE canvas SET paperBin = ? WHERE id = ?";
+        jdbcTemplate.update(sql, inTrash, id);
+    }
+
+    public List<Canvas> getActiveCanvasByUser(String user) {
+        String sql = "SELECT * FROM canvas WHERE owner = ? AND paperBin = false";
+        return jdbcTemplate.query(sql, rowMapper(), user);
+    }
+
+    public List<Canvas> getTrashCanvasByUser(String user) {
+        String sql = "SELECT * FROM canvas WHERE owner = ? AND paperBin = true";
+        return jdbcTemplate.query(sql,rowMapper(), user);
+    }
+
+    public void deletePermanent(String user, int id) {
+        String sql = "DELETE FROM canvas WHERE owner = ? AND id = ?";
+        jdbcTemplate.query(sql,rowMapper(), user, id);
+    }
+
+
 
 }

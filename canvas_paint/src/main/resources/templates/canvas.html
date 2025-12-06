@@ -14,7 +14,7 @@
             <a th:href="@{/profile}"><button>Mi Perfil</button></a>
         </div>
         <hr>
-        <h2 class="center">Lienzo de <span th:text="${user}">Usuario</span></h2>
+        <h2 class="center"><span th:text="${canvasName}">n.canvas</span>, por <span th:text="${ownerName}">Usuario</span></h2>
 
         <div th:if="${canvasData != null}">
             <div style="display:flex; justify-content:center; padding:10px; background:#f4f4f4; border:1px solid #ccc; border-radius: 6px; overflow: auto;">
@@ -22,10 +22,21 @@
             </div>
 
             <script th:inline="javascript">
-                const canvasData = [(${canvasData})];
-
-                (function(){
+                /*<![CDATA[*/
+                document.addEventListener("DOMContentLoaded", function() {
                     'use strict';
+
+                    const rawJson = /*[[${canvasData}]]*/ '{}';
+                    let canvasData = {};
+
+                    try {
+                        canvasData = JSON.parse(rawJson);
+                        console.log("Datos cargados:", canvasData);
+                    } catch (e) {
+                        console.error("Error JSON:", e);
+                        return;
+                    }
+
                     const canvas = document.getElementById('viewOnlyCanvas');
                     if (!canvas) return;
                     const ctx = canvas.getContext('2d');
@@ -45,17 +56,19 @@
 
                     function drawShape(o){
                         ctx.save();
-                        ctx.fillStyle=o.color;
-                        ctx.strokeStyle=o.color;
-                        ctx.lineWidth=2;
-                        const x=o.x,y=o.y,s=o.size;
-                        if(o.type==='circle'){
-                            ctx.beginPath(); ctx.arc(x,y,s,0,Math.PI*2); ctx.fill(); ctx.closePath();
-                        } else if(o.type==='square'){
+                        ctx.fillStyle = o.color;
+                        ctx.strokeStyle = o.color;
+                        ctx.lineWidth = 2;
+                        const x = o.x, y = o.y, s = o.size;
+
+                        ctx.beginPath();
+                        if(o.type === 'circulo' || o.type === 'circle'){
+                            ctx.arc(x,y,s,0,Math.PI*2); ctx.fill();
+                        } else if(o.type === 'cuadrado' || o.type === 'square'){
                             ctx.fillRect(x-s,y-s,s*2,s*2);
-                        } else if(o.type==='triangle'){
-                            ctx.beginPath(); ctx.moveTo(x,y-s); ctx.lineTo(x-s,y+s); ctx.lineTo(x+s,y+s); ctx.closePath(); ctx.fill();
-                        } else if(o.type==='star7'){
+                        } else if(o.type === 'triangulo' || o.type === 'triangle'){
+                            ctx.moveTo(x,y-s); ctx.lineTo(x-s,y+s); ctx.lineTo(x+s,y+s); ctx.closePath(); ctx.fill();
+                        } else if(o.type === 'estrella' || o.type === 'star7'){
                             drawStar(ctx,x,y,s,7); ctx.fill();
                         }
                         ctx.restore();
@@ -65,15 +78,14 @@
                         const pts = o.points;
                         if(!pts||pts.length===0) return;
                         ctx.save();
-                        ctx.strokeStyle=o.color;
+                        ctx.strokeStyle = o.color;
                         ctx.lineWidth = (o.size || 2);
-                        ctx.lineJoin='round';
-                        ctx.lineCap='round';
+                        ctx.lineJoin = 'round';
+                        ctx.lineCap = 'round';
                         ctx.beginPath();
-                        ctx.moveTo(pts[0].x,pts[0].y);
-                        for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x,pts[i].y);
+                        ctx.moveTo(pts[0].x, pts[0].y);
+                        for(let i=1; i<pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
                         ctx.stroke();
-                        ctx.closePath();
                         ctx.restore();
                     }
 
@@ -86,8 +98,11 @@
 
                         if (data.objects && Array.isArray(data.objects)) {
                             data.objects.forEach(o => {
-                                if (o.type === 'freehand') drawFreehand(o);
-                                else drawShape(o);
+                                if (o.type === 'libre' || o.type === 'freehand') {
+                                    drawFreehand(o);
+                                } else {
+                                    drawShape(o);
+                                }
                             });
                         }
                     }
@@ -95,7 +110,7 @@
                     if (canvasData) {
                         redraw(canvasData);
                     }
-                })();
+                });
                 /*]]>*/
             </script>
         </div>

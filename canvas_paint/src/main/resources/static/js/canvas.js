@@ -35,6 +35,7 @@
     const objectsList = document.getElementById('objects');
     const inputW = document.getElementById('inputWidth');
     const inputH = document.getElementById('inputHeight');
+    const privacy = document.getElementById('privacy')
     const saveBtn = document.getElementById('saveBtn');
     const canvasNameDisplay = document.getElementById('canvasNameDisplay');
     const canvasNameInput = document.getElementById('canvasNameInput');
@@ -594,20 +595,29 @@
             autosaveStatus.style.opacity = "1";
         }
 
+        let isPublicValue = false;
+        if (privacy) {
+            isPublicValue = privacy.value === '1';
+        }
+
         const payload = {
           width: canvas.width,
           height: canvas.height,
-          objects: objects
+          objects: objects,
+          isPublic: isPublicValue
         };
+
         let name = canvasNameDisplay.textContent;
         const oldKey = getLocalKey();
-
         const basePath = (contextPath === '/') ? '' : contextPath;
+
 
         let url = basePath + '/saveCanvas?name=' + encodeURIComponent(name);
         if (currentCanvasId) {
             url += '&id=' + encodeURIComponent(currentCanvasId);
         }
+
+        url += '&isPublic=' + isPublicValue;
 
         fetch(url, {
           method: 'POST',
