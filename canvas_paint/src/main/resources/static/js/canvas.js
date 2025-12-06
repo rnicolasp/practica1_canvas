@@ -602,7 +602,9 @@
         let name = canvasNameDisplay.textContent;
         const oldKey = getLocalKey();
 
-        let url = contextPath + '/saveCanvas?name=' + encodeURIComponent(name);
+        const basePath = (contextPath === '/') ? '' : contextPath;
+
+        let url = basePath + '/saveCanvas?name=' + encodeURIComponent(name);
         if (currentCanvasId) {
             url += '&id=' + encodeURIComponent(currentCanvasId);
         }

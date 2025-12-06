@@ -7,14 +7,14 @@ import com.paint.servlets.services.CanvasService;
 import com.paint.servlets.services.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Controller
 public class indexController {
+
+    public record RespuestaGuardado(String status, Object id) {}
 
     @Autowired
     private UserService userService;
@@ -98,6 +98,31 @@ public class indexController {
         model.addAttribute("height", 600);
         model.addAttribute("isOwner", true);
 
-        return "redirect:/editor";
+        return "/editor";
+    }
+
+
+    @PostMapping("/saveCanvas")
+    @ResponseBody
+    public RespuestaGuardado saveCanvas(
+            @RequestParam("name") String name,
+            @RequestParam(value = "id", required = false) Integer id,
+            @RequestBody String content,
+            HttpSession session) {
+
+        String user = (String) session.getAttribute("user");
+
+        if (user == null) {
+            return new RespuestaGuardado("error", "No has iniciado sesión");
+        }
+
+        try {
+            int savedId = canvasService.updateCanvas(user, name, content, id);
+
+            return new RespuestaGuardado("ok", savedId);
+
+        } catch (Exception e) {
+            return new RespuestaGuardado("error", "Error interno");
+        }
     }
 }

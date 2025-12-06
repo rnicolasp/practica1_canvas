@@ -10,8 +10,10 @@ public class Canvas {
     private Date dateCreated;
     private Date dateModified;
     private boolean paperBin;
+    private boolean isPublic;
+    private int version;
 
-    public Canvas(int id, String owner, String name, String content, Date dateCreated, Date dateModified, boolean objectCount) {
+    public Canvas(int id, String owner, String name, String content, Date dateCreated, Date dateModified, boolean paperBin, boolean isPublic, int version) {
         this.id = id;
         this.owner = owner;
         this.name = name;
@@ -19,6 +21,8 @@ public class Canvas {
         this.dateCreated = dateCreated;
         this.dateModified = dateModified;
         this.paperBin = paperBin;
+        this.isPublic = isPublic;
+        this.version = version;
     }
 
     public int getId() { return id; }
@@ -28,4 +32,6 @@ public class Canvas {
     public Date getDateCreated() { return dateCreated; }
     public Date getDateModified() { return dateModified; }
     public boolean getPaperBin() { return paperBin; }
+    public boolean isPublic() { return isPublic; }
+    public int getVersion() { return version; }
 }
