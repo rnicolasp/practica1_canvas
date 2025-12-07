@@ -4,47 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Papelera de Reciclaje</title>
-
     <link rel="stylesheet" th:href="@{/css/home.css}">
-
-    <style>
-        /* Estilos específicos SOLO para la papelera */
-        /* Mantenemos el diseño de fila y el color rojo de fondo para ítems borrados */
-        .trash-list { list-style: none; padding: 0; margin-top: 20px; }
-
-        .trash-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #fff0f0;
-            border: 1px solid #ffcccc;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 6px;
-        }
-
-        .trash-info h4 { margin: 0 0 5px 0; color: #d9534f; font-size: 1.1rem; }
-        .trash-info p { margin: 0; font-size: 0.9em; color: #666; }
-
-        .actions { display: flex; gap: 10px; }
-
-        /* Colores específicos que pediste mantener (usamos !important por si home.css interfiere) */
-        .btn-restore {
-            background-color: #5cb85c !important;
-            color: white !important;
-            border: none;
-        }
-        .btn-restore:hover { background-color: #4cae4c !important; }
-
-        .btn-delete {
-            background-color: #d9534f !important;
-            color: white !important;
-            border: none;
-        }
-        .btn-delete:hover { background-color: #c9302c !important; }
-
-        .empty-msg { text-align: center; color: #888; margin-top: 40px; font-style: italic; }
-    </style>
 </head>
 <body>
 
@@ -69,14 +29,10 @@
                     <p>ID: <span th:text="${canvas.id}">0</span></p>
                 </div>
 
-                <div class="actions">
-                    <button class="btn-restore" th:onclick="'restoreCanvas(' + ${canvas.id} + ')'">
-                        ♻️ Restaurar
-                    </button>
+                <div class="trash-actions">
+                    <button class="btn-success" th:onclick="'restoreCanvas(' + ${canvas.id} + ')'">Restaurar</button>
 
-                    <button class="btn-delete" th:onclick="'deletePermanent(' + ${canvas.id} + ')'">
-                        ❌ Eliminar definitivamente
-                    </button>
+                    <button class="btn-danger" th:onclick="'deletePermanent(' + ${canvas.id} + ')'">Eliminar definitivamente</button>
                 </div>
             </li>
         </ul>
@@ -84,33 +40,24 @@
 </div>
 
 <script th:inline="javascript">
+    /* ... (El script se mantiene igual) ... */
     /*<![CDATA[*/
     function restoreCanvas(id) {
         if(!confirm("¿Quieres restaurar este dibujo y devolverlo a tu perfil?")) return;
-
         fetch('/bin/restore?id=' + id, { method: 'POST' })
         .then(response => {
-            if (response.ok) {
-                removeRow(id);
-            } else {
-                alert("Error al restaurar.");
-            }
-        })
-        .catch(err => console.error(err));
+            if (response.ok) removeRow(id);
+            else alert("Error al restaurar.");
+        }).catch(err => console.error(err));
     }
 
     function deletePermanent(id) {
-        if(!confirm("⚠️ ¡CUIDADO! ⚠️\n\n¿Estás seguro de que quieres eliminar esto PARA SIEMPRE?\nEsta acción no se puede deshacer.")) return;
-
+        if(!confirm("¡CUIDADO!\n\n¿Estás seguro de que quieres eliminar esto PARA SIEMPRE?\nEsta acción no se puede deshacer.")) return;
         fetch('/bin/deletePermanent?id=' + id, { method: 'POST' })
         .then(response => {
-            if (response.ok) {
-                removeRow(id);
-            } else {
-                alert("Error al eliminar definitivamente.");
-            }
-        })
-        .catch(err => console.error(err));
+            if (response.ok) removeRow(id);
+            else alert("Error al eliminar definitivamente.");
+        }).catch(err => console.error(err));
     }
 
     function removeRow(id) {
@@ -120,14 +67,11 @@
             row.style.opacity = '0';
             setTimeout(() => {
                 row.remove();
-                if(document.querySelectorAll('.trash-item').length === 0) {
-                    location.reload();
-                }
+                if(document.querySelectorAll('.trash-item').length === 0) location.reload();
             }, 300);
         }
     }
     /*]]>*/
 </script>
-
 </body>
 </html>

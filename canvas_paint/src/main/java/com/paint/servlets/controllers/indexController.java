@@ -62,14 +62,17 @@ public class indexController {
     private String showCanvas(@RequestParam(value = "id", required = false) Integer id, HttpSession session, Model model) {
         String user = (String) session.getAttribute("user");
         if (user == null) return "redirect:/login";
+
         Canvas canvas = canvasService.getCanvasById(id);
         if (canvas != null) {
             boolean isOwner = user.equals(canvas.getOwner());
+            boolean canEdit = canvasService.canEdit(id, user);
             model.addAttribute("loadId", canvas.getId());
             model.addAttribute("ownerName", canvas.getOwner());
             model.addAttribute("canvasName", canvas.getName());
             model.addAttribute("canvasData", canvas.getContent());
             model.addAttribute("isOwner", isOwner);
+            model.addAttribute("canEdit", canEdit);
         }
         return "canvas";
     }
@@ -81,6 +84,8 @@ public class indexController {
         model.addAttribute("width", 600);
         model.addAttribute("height", 600);
         boolean isOwner = true;
+        boolean canEdit = true;
+
         if (id != null) {
             Canvas canvas = canvasService.getCanvasById(id);
             if (canvas != null && canvasService.canEdit(id, user)) {
@@ -95,6 +100,7 @@ public class indexController {
         }
 
         model.addAttribute("isOwner", isOwner);
+        model.addAttribute("canEdit", canEdit);
         return "editor";
     }
 
@@ -215,5 +221,25 @@ public class indexController {
     @ResponseBody
     public List<Map<String, Object>> listShares(@RequestParam int id) {
         return canvasService.getShares(id);
+    }
+
+    @PostMapping("/canvas/duplicate")
+    public String duplicateCanvas(@RequestParam("id") Integer id, HttpSession session) {
+        String user = (String) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+
+        Canvas canvas = canvasService.getCanvasById(id);
+        if (canvas != null) {
+            boolean esPublico = canvas.isPublic();
+            boolean esMio = canvas.getOwner().equals(user);
+            boolean compartidoConmigo = canvasService.canEdit(id, user)
+                    || canvasService.getShares(id).stream().anyMatch(s -> s.get("user_id").equals(user));
+            if (esPublico || esMio || compartidoConmigo) {
+                canvasService.duplicateCanvas(id, user);
+                return "redirect:/home";
+            }
+        }
+
+        return "redirect:/home?error=no_permiso";
     }
 }

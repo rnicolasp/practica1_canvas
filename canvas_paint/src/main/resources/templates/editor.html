@@ -6,7 +6,6 @@
     <meta name="contextPath" th:content="@{/}">
     <title>ePaint - Canvas</title>
     <link rel="stylesheet" th:href="@{/css/home.css}">
-    <link rel="stylesheet" th:href="@{/css/canvas.css}">
 </head>
 <body class="canvas-editor-body">
 <div class="card">
@@ -19,22 +18,16 @@
 
         <div class="tool-group">
             <span id="autosaveStatus" class="small-muted" style="margin: 0 8px; transition: opacity 0.5s;"></span>
-
-            <button id="undoBtn" disabled title="Deshacer" style="padding: 6px 8px;">
-                <img th:src="@{/icons/undo.svg}" alt="Undo" style="width:16px; height:16px;">
-            </button>
-            <button id="redoBtn" disabled title="Rehacer" style="padding: 6px 8px;">
-                <img th:src="@{/icons/redo.svg}" alt="Redo" style="width:16px; height:16px;">
-            </button>
-
-            <button id="saveBtn" th:if="${isOwner}">Guardar</button>
+            <button id="undoBtn" disabled title="Deshacer" style="padding: 6px 8px;">Deshacer</button>
+            <button id="redoBtn" disabled title="Rehacer" style="padding: 6px 8px;">Rehacer</button>
+            <button id="saveBtn" th:if="${canEdit}">Guardar</button>
             <button id="settingsToggle">Ajustes</button>
             <button id="shareBtn" th:if="${isOwner}">Compartir</button>
             <button id="historyBtn" th:if="${loadId != null}">Historial</button>
         </div>
     </div>
 
-    <div id="sizePanel" style="display:none; margin:0; padding: 12px 20px; background: #f9f9f9; border-bottom: 1px solid #eee;">
+    <div id="sizePanel">
         <label style="margin-right:8px">Ancho: <input id="inputWidth" type="number" min="100" max="2000" th:value="${width}" style="width:80px"></label>
         <label style="margin-right:8px">Alto: <input id="inputHeight" type="number" min="100" max="2000" th:value="${height}" style="width:80px"></label>
         <button id="applySize">Aplicar</button>
@@ -47,30 +40,25 @@
         </label>
     </div>
 
-    <div id="sharePanel" style="display:none; position:absolute; top:60px; right:80px; width:320px; background:white; border:1px solid #ccc; box-shadow:0 5px 15px rgba(0,0,0,0.1); z-index:100; padding:15px; border-radius:8px;">
-        <h3 style="margin-top:0">Compartir Lienzo</h3>
-
-        <div style="display:flex; gap:5px; margin-bottom:15px;">
+    <div id="sharePanel" class="popup-panel">
+        <h3>Compartir Lienzo</h3>
+        <div class="popup-row">
             <input type="text" id="shareUser" placeholder="Usuario..." style="flex:1;">
             <select id="sharePerm">
                 <option value="READ">Leer</option>
                 <option value="WRITE">Editar</option>
             </select>
-            <button id="doShareBtn" style="background:#007bff; color:white;">+</button>
+            <button id="doShareBtn" class="btn-primary">+</button>
         </div>
-
-        <ul id="shareList" style="list-style:none; padding:0; margin:0;">
-        </ul>
-
-        <button onclick="document.getElementById('sharePanel').style.display='none'" style="width:100%; margin-top:10px;">Cerrar</button>
+        <ul id="shareList" class="popup-list"></ul>
+        <button onclick="document.getElementById('sharePanel').style.display='none'" class="popup-close-btn">Cerrar</button>
     </div>
 
-    <div id="historyPanel" style="display:none; position:absolute; top:60px; right:20px; width:300px; background:white; border:1px solid #ccc; box-shadow:0 5px 15px rgba(0,0,0,0.1); z-index:100; padding:15px; border-radius:8px;">
-        <h3 style="margin-top:0">Historial de Versiones</h3>
+    <div id="historyPanel" class="popup-panel">
+        <h3>Historial de Versiones</h3>
         <p class="small-muted">Haz clic en una versión para cargarla.</p>
-        <ul id="historyList" style="list-style:none; padding:0; max-height:300px; overflow-y:auto;">
-        </ul>
-        <button onclick="document.getElementById('historyPanel').style.display='none'" style="width:100%; margin-top:10px;">Cerrar</button>
+        <ul id="historyList" class="popup-list"></ul>
+        <button onclick="document.getElementById('historyPanel').style.display='none'" class="popup-close-btn">Cerrar</button>
     </div>
 
     <div class="canvas-area">
@@ -113,7 +101,6 @@
                     <option value="select">Seleccionar / Mover</option>
                 </select>
             </label>
-
             <label>Forma:
                 <select id="shapeType">
                     <option value="circulo">Círculo</option>
@@ -122,16 +109,14 @@
                     <option value="estrella">Estrella 7 puntas</option>
                 </select>
             </label>
-
             <label>Color: <input id="color" type="color" value="#ff0000"></label>
             <label>Tamaño (px):
                 <input id="size" type="range" min="1" max="100" value="8">
                 <span id="sizeDisplay" class="small-muted">8</span>
             </label>
-
-            <div class="controls-row">
-                <button id="addCenter">Añadir en centro</button>
-                <button id="clearAll">Limpiar todo</button>
+            <div class="controls-row" style="display:flex; gap:5px; margin-top:10px;">
+                <button id="addCenter" style="flex:1;">Centro</button>
+                <button id="clearAll" style="flex:1;">Limpiar</button>
             </div>
         </div>
         <hr>
@@ -145,7 +130,6 @@
     window.INITIAL_CANVAS_DATA = [(${canvasData})];
     /*]]>*/
 </script>
-
 <script th:src="@{/js/canvas.js}"></script>
 </body>
 </html>

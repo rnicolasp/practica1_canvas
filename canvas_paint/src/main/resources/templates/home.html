@@ -27,7 +27,7 @@
                 <div class="canvas-card" th:each="c : ${sharedCanvas}" style="border-left: 4px solid #007bff;">
                     <h4 th:text="${c.name}">Nombre</h4>
                     <div class="canvas-info">
-                        <p><strong>De:</strong> <span th:text="${c.owner}">Dueño</span></p>
+                        <p><strong>De:</strong> <span th:text="${c.owner}"></span></p>
                         <p><small>Modificado: <span th:text="${#dates.format(c.dateModified, 'dd/MM/yyyy HH:mm')}"></span></small></p>
                     </div>
                     <div class="canvas-actions">
@@ -35,7 +35,7 @@
 
                         <a th:if="${#lists.contains(editableIds, c.id)}"
                            th:href="@{/editor(id=${c.id})}">
-                            <button style="background-color:#007bff; color:white;">✏️ Editar</button>
+                            <button style="background-color:#007bff; color:white;">Editar</button>
                         </a>
                     </div>
                 </div>

@@ -110,4 +110,21 @@ public class CanvasService {
         return canvasDAO.getWritePermissionIds(user);
     }
 
+    public void duplicateCanvas(int originalId, String newOwner) {
+        Canvas original = canvasDAO.findById(originalId);
+        if (original == null) throw new RuntimeException("Canvas no encontrado");
+        Canvas copy = new Canvas(
+                0,
+                newOwner,
+                "Copia de " + original.getName(),
+                original.getContent(),
+                new java.util.Date(),
+                new java.util.Date(),
+                false,
+                false,
+                1
+        );
+        canvasDAO.registerCanvas(copy);
+    }
+
 }
