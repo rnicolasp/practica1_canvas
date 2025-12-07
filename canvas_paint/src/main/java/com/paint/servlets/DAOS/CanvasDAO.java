@@ -95,7 +95,7 @@ public class CanvasDAO {
 
     public void deletePermanent(String user, int id) {
         String sql = "DELETE FROM canvas WHERE owner = ? AND id = ?";
-        jdbcTemplate.query(sql,rowMapper(), user, id);
+        jdbcTemplate.update(sql, user, id);
     }
 
     public void saveVersionHistory(int canvasId, String oldContent, int oldVersion) {
@@ -137,5 +137,17 @@ public class CanvasDAO {
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    public List<Canvas> getCanvasesSharedWithUser(String user) {
+        String sql = "SELECT c.* FROM canvas c " +
+                "JOIN shared_canvas sc ON c.id = sc.canvas_id " +
+                "WHERE sc.user_id = ?";
+        return jdbcTemplate.query(sql, rowMapper(), user);
+    }
+
+    public List<Integer> getWritePermissionIds(String user) {
+        String sql = "SELECT canvas_id FROM shared_canvas WHERE user_id = ? AND permission = 'WRITE'";
+        return jdbcTemplate.queryForList(sql, Integer.class, user);
     }
 }

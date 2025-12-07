@@ -20,23 +20,43 @@
         </div>
 
         <hr>
-        <h3 class="center">Todos los Lienzos</h3>
+
+        <div th:if="${!sharedCanvas.isEmpty()}">
+            <h3 class="center">Compartidos conmigo</h3>
+            <div class="canvas-grid">
+                <div class="canvas-card" th:each="c : ${sharedCanvas}" style="border-left: 4px solid #007bff;">
+                    <h4 th:text="${c.name}">Nombre</h4>
+                    <div class="canvas-info">
+                        <p><strong>De:</strong> <span th:text="${c.owner}">Dueño</span></p>
+                        <p><small>Modificado: <span th:text="${#dates.format(c.dateModified, 'dd/MM/yyyy HH:mm')}"></span></small></p>
+                    </div>
+                    <div class="canvas-actions">
+                        <a th:href="@{/canvas(id=${c.id})}"><button>Ver</button></a>
+
+                        <a th:if="${#lists.contains(editableIds, c.id)}"
+                           th:href="@{/editor(id=${c.id})}">
+                            <button style="background-color:#007bff; color:white;">✏️ Editar</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <hr>
+        </div>
+
+        <h3 class="center">Galería Pública</h3>
         <div class="canvas-grid">
             <div class="canvas-card" th:each="canvas : ${allCanvas}">
-                <h4 th:text="${canvas.name}">Nombre del Lienzo</h4>
+                <h4 th:text="${canvas.name}">Nombre</h4>
                 <div class="canvas-info">
-                    <p><strong>Creado por:</strong> <span th:text="${canvas.owner}">Propietario</span></p>
-                    <p><strong>ID:</strong> <span th:text="${canvas.id}">ID</span></p>
-
-                    <p><small><strong>Creado:</strong>
-                        <span th:text="${#dates.format(canvas.dateCreated, 'dd/MM/yyyy HH:mm')}">01/01/2024</span>
-                    </small></p>
-                    <p><small><strong>Modificado:</strong>
-                        <span th:text="${#dates.format(canvas.dateModified, 'dd/MM/yyyy HH:mm')}">01/01/2024</span>
-                    </small></p>
+                    <p><strong>Por:</strong> <span th:text="${canvas.owner}">Propietario</span></p>
                 </div>
                 <div class="canvas-actions">
-                    <a th:href="@{/canvas(id=${canvas.id})}"><button>Cargar</button></a>
+                    <a th:href="@{/canvas(id=${canvas.id})}"><button>Ver</button></a>
+
+                    <a th:if="${canvas.owner == user or #lists.contains(editableIds, canvas.id)}"
+                       th:href="@{/editor(id=${canvas.id})}">
+                        <button style="background-color:#007bff; color:white;">Editar</button>
+                    </a>
                 </div>
             </div>
         </div>

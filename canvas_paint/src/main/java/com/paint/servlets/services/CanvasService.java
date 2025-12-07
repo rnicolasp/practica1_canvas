@@ -102,4 +102,12 @@ public class CanvasService {
         return "WRITE".equals(perm);
     }
 
+    public List<Canvas> listSharedWithUser(String user) {
+        return canvasDAO.getCanvasesSharedWithUser(user);
+    }
+
+    public List<Integer> getWriteIds(String user) {
+        return canvasDAO.getWritePermissionIds(user);
+    }
+
 }

@@ -37,6 +37,10 @@ public class indexController {
         model.addAttribute("user", user);
         List<Canvas> allCanvas = canvasService.listAllCanvas();
         model.addAttribute("allCanvas", allCanvas);
+        List<Canvas> sharedCanvas = canvasService.listSharedWithUser(user);
+        model.addAttribute("sharedCanvas", sharedCanvas);
+        List<Integer> editableIds = canvasService.getWriteIds(user);
+        model.addAttribute("editableIds", editableIds);
         return "home";
     }
 
