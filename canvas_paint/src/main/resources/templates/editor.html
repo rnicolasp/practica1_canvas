@@ -29,6 +29,8 @@
 
             <button id="saveBtn" th:if="${isOwner}">Guardar</button>
             <button id="settingsToggle">Ajustes</button>
+            <button id="shareBtn" th:if="${isOwner}">Compartir</button>
+            <button id="historyBtn" th:if="${loadId != null}">Historial</button>
         </div>
     </div>
 
@@ -39,10 +41,36 @@
         <button id="resetSize" type="button">Restablecer</button>
         <label>Privacidad:
             <select id="privacy">
-                <option value="0">Privado</option>
-                <option value="1">Publico</option>
+                <option value="0" th:selected="${privacyValue == '0'}">Privado</option>
+                <option value="1" th:selected="${privacyValue == '1'}">Publico</option>
             </select>
         </label>
+    </div>
+
+    <div id="sharePanel" style="display:none; position:absolute; top:60px; right:80px; width:320px; background:white; border:1px solid #ccc; box-shadow:0 5px 15px rgba(0,0,0,0.1); z-index:100; padding:15px; border-radius:8px;">
+        <h3 style="margin-top:0">Compartir Lienzo</h3>
+
+        <div style="display:flex; gap:5px; margin-bottom:15px;">
+            <input type="text" id="shareUser" placeholder="Usuario..." style="flex:1;">
+            <select id="sharePerm">
+                <option value="READ">Leer</option>
+                <option value="WRITE">Editar</option>
+            </select>
+            <button id="doShareBtn" style="background:#007bff; color:white;">+</button>
+        </div>
+
+        <ul id="shareList" style="list-style:none; padding:0; margin:0;">
+        </ul>
+
+        <button onclick="document.getElementById('sharePanel').style.display='none'" style="width:100%; margin-top:10px;">Cerrar</button>
+    </div>
+
+    <div id="historyPanel" style="display:none; position:absolute; top:60px; right:20px; width:300px; background:white; border:1px solid #ccc; box-shadow:0 5px 15px rgba(0,0,0,0.1); z-index:100; padding:15px; border-radius:8px;">
+        <h3 style="margin-top:0">Historial de Versiones</h3>
+        <p class="small-muted">Haz clic en una versión para cargarla.</p>
+        <ul id="historyList" style="list-style:none; padding:0; max-height:300px; overflow-y:auto;">
+        </ul>
+        <button onclick="document.getElementById('historyPanel').style.display='none'" style="width:100%; margin-top:10px;">Cerrar</button>
     </div>
 
     <div class="canvas-area">

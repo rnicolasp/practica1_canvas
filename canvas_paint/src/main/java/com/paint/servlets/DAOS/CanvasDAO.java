@@ -1,7 +1,9 @@
 package com.paint.servlets.DAOS;
 
 import com.paint.servlets.models.Canvas;
+import com.paint.servlets.models.CanvasVersion;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -57,12 +59,12 @@ public class CanvasDAO {
     }
 
     public void updateCanvas(int id, String content, String name, boolean isPublic) {
-        String sql = "UPDATE canvas SET content = ?, name = ?, is_public = ? WHERE id = ?";
+        String sql = "UPDATE canvas SET content = ?, name = ?, isPublic = ?, version = version + 1, dateModified = NOW() WHERE id = ?";
         jdbcTemplate.update(sql, content, name, isPublic, id);
     }
 
     public List<Canvas> findAll() {
-        String sql = "SELECT * FROM canvas WHERE paperBin = false";
+        String sql = "SELECT * FROM canvas WHERE paperBin = false AND isPublic = true";
         return jdbcTemplate.query(sql, rowMapper());
     }
 
@@ -96,6 +98,44 @@ public class CanvasDAO {
         jdbcTemplate.query(sql,rowMapper(), user, id);
     }
 
+    public void saveVersionHistory(int canvasId, String oldContent, int oldVersion) {
+        String sql = "INSERT INTO canvas_versions (canvas_id, content, version_number, saved_at) VALUES (?, ?, ?, NOW())";
+        jdbcTemplate.update(sql, canvasId, oldContent, oldVersion);
+    }
 
+    public List<CanvasVersion> getVersions(int canvasId) {
+        String sql = "SELECT * FROM canvas_versions WHERE canvas_id = ? ORDER BY version_number DESC";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new CanvasVersion(
+                rs.getInt("id"),
+                rs.getInt("canvas_id"),
+                rs.getString("content"),
+                rs.getInt("version_number"),
+                rs.getTimestamp("saved_at")
+        ), canvasId);
+    }
 
+    public void shareCanvas(int canvasId, String targetUser, String permission) {
+        String sql = "INSERT INTO shared_canvas (canvas_id, user_id, permission) VALUES (?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE permission = ?";
+        jdbcTemplate.update(sql, canvasId, targetUser, permission, permission);
+    }
+
+    public void unshareCanvas(int canvasId, String targetUser) {
+        String sql = "DELETE FROM shared_canvas WHERE canvas_id = ? AND user_id = ?";
+        jdbcTemplate.update(sql, canvasId, targetUser);
+    }
+
+    public List<Map<String, Object>> getSharedUsers(int canvasId) {
+        String sql = "SELECT user_id, permission FROM shared_canvas WHERE canvas_id = ?";
+        return jdbcTemplate.queryForList(sql, canvasId);
+    }
+
+    public String getUserPermission(int canvasId, String user) {
+        String sql = "SELECT permission FROM shared_canvas WHERE canvas_id = ? AND user_id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, String.class, canvasId, user);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
 }

@@ -27,6 +27,8 @@
     let dragOffsetX = 0;
     let dragOffsetY = 0;
     let autosaveTimer = null;
+    let hasUnsavedChanges = false;
+    const AUTOSAVE_INTERVAL = 60000;
     const modeSelect = document.getElementById('mode');
     const shapeType = document.getElementById('shapeType');
     const colorInput = document.getElementById('color');
@@ -47,6 +49,10 @@
     let isDraggingToolbox = false;
     let dragToolboxOffsetX = 0;
     let dragToolboxOffsetY = 0;
+    const shareBtn = document.getElementById('shareBtn');
+    const sharePanel = document.getElementById('sharePanel');
+    const shareList = document.getElementById('shareList');
+    const doShareBtn = document.getElementById('doShareBtn');
 
     function redraw() {
       canvasCont.fillStyle = '#fff';
@@ -631,7 +637,7 @@
         .then(j => {
           if (j && j.status === 'ok') {
             currentCanvasId = j.id;
-
+            hasUnsavedChanges = false;
             if (autosaveStatus) {
                 autosaveStatus.textContent = "Guardado.";
                 setTimeout(() => { autosaveStatus.style.opacity = "0"; }, 2000);
@@ -664,19 +670,12 @@
     }
 
     function triggerAutosave() {
-        clearTimeout(autosaveTimer);
-
-        if (!saveBtn || !currentCanvasId) {
-            return;
+            hasUnsavedChanges = true;
+            if (autosaveStatus) {
+                autosaveStatus.textContent = "Cambios sin guardar...";
+                autosaveStatus.style.opacity = "1";
+            }
         }
-
-        if (autosaveStatus) {
-            autosaveStatus.textContent = "Guardando...";
-            autosaveStatus.style.opacity = "1";
-        }
-
-        autosaveTimer = setTimeout(() => saveToServer(false), 2500);
-    }
 
 
     if (saveBtn) {
@@ -715,6 +714,155 @@
     }
     pushHistory();
     updateUndoRedoButtons();
+
+    if (shareBtn) {
+                shareBtn.addEventListener('click', () => {
+                    const isVisible = sharePanel.style.display === 'block';
+                    sharePanel.style.display = isVisible ? 'none' : 'block';
+                    if (!isVisible) loadShares();
+                });
+            }
+
+            if (doShareBtn) {
+                doShareBtn.addEventListener('click', () => {
+                    const user = document.getElementById('shareUser').value;
+                    const perm = document.getElementById('sharePerm').value;
+                    if (!user) return;
+
+                    fetch(`/share/add?id=${currentCanvasId}&targetUser=${user}&permission=${perm}`, { method: 'POST' })
+                        .then(res => res.text())
+                        .then(text => {
+                            if (text === 'ok') {
+                                document.getElementById('shareUser').value = '';
+                                loadShares();
+                            } else {
+                                alert("Error: " + text.replace("error:", ""));
+                            }
+                        });
+                });
+            }
+
+            function loadShares() {
+                fetch(`/share/list?id=${currentCanvasId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        shareList.innerHTML = '';
+                        if (data.length === 0) {
+                            shareList.innerHTML = '<li class="small-muted">No compartido con nadie.</li>';
+                            return;
+                        }
+                        data.forEach(item => {
+                            const li = document.createElement('li');
+                            li.style.display = 'flex'; li.style.justifyContent = 'space-between'; li.style.marginBottom = '5px';
+
+                            li.innerHTML = `
+                                <span>
+                                    <strong>${item.user_id}</strong>
+                                    <small>(${item.permission === 'WRITE' ? 'Editar' : 'Ver'})</small>
+                                </span>
+                                <button onclick="removeShare('${item.user_id}')" style="background:red; color:white; padding:2px 6px; font-size:0.8em;">X</button>
+                            `;
+                            shareList.appendChild(li);
+                        });
+                    });
+            }
+
+            function removeShare(user) {
+                if(!confirm(`¿Dejar de compartir con ${user}?`)) return;
+                fetch(`/share/remove?id=${currentCanvasId}&targetUser=${user}`, { method: 'POST' })
+                    .then(() => loadShares());
+            }
+
+            window.removeShare = removeShare;
+
+    const historyBtn = document.getElementById('historyBtn');
+    const historyPanel = document.getElementById('historyPanel');
+    const historyList = document.getElementById('historyList');
+
+    if (historyBtn && historyPanel) {
+
+        historyBtn.addEventListener('click', () => {
+                const isVisible = historyPanel.style.display === 'block';
+                historyPanel.style.display = isVisible ? 'none' : 'block';
+
+                if (!isVisible && currentCanvasId) {
+                    loadHistoryVersions(currentCanvasId);
+                }
+            });
+        }
+
+        function loadHistoryVersions(id) {
+            historyList.innerHTML = '<li class="small-muted">Cargando...</li>';
+
+            fetch('/canvas/history?id=' + id)
+                .then(res => res.json())
+                .then(versions => {
+                    historyList.innerHTML = '';
+
+                    if (!versions || versions.length === 0) {
+                        historyList.innerHTML = '<li>No hay versiones anteriores.</li>';
+                        return;
+                    }
+
+                    versions.forEach(v => {
+                        const li = document.createElement('li');
+                        li.style.padding = "8px";
+                        li.style.borderBottom = "1px solid #eee";
+                        li.style.cursor = "pointer";
+                        li.style.display = "flex";
+                        li.style.justifyContent = "space-between";
+
+                        // Formatear fecha (puedes usar una librería o JS nativo)
+                        const date = new Date(v.savedAt).toLocaleString();
+
+                        li.innerHTML = `
+                            <div>
+                                <strong>v${v.versionNumber}</strong><br>
+                                <span class="small-muted">${date}</span>
+                            </div>
+                            <button class="btn-restore-mini" style="font-size:0.8em;">Ver</button>
+                        `;
+
+                        li.addEventListener('click', () => {
+                            if(confirm("¿Cargar esta versión antigua? (Los cambios no guardados se perderán)")) {
+                                loadCanvasFromHistory(v.content);
+                                historyPanel.style.display = 'none';
+                            }
+                        });
+
+                        historyList.appendChild(li);
+                    });
+                })
+                .catch(err => {
+                    console.error("Error cargando historial", err);
+                    historyList.innerHTML = '<li style="color:red">Error al cargar historial.</li>';
+                });
+        }
+
+        function loadCanvasFromHistory(jsonContent) {
+            try {
+                const data = JSON.parse(jsonContent);
+                loadState(data);
+                pushHistory();
+                alert("Versión cargada. Dale a 'Guardar' si quieres hacerla permanente.");
+            } catch (e) {
+                console.error("Error parseando versión antigua", e);
+                alert("Error: El archivo de esta versión parece dañado.");
+            }
+        }
+        setInterval(() => {
+            if (hasUnsavedChanges && currentCanvasId) {
+                console.log("Intervalo cumplido: Guardando cambios pendientes...");
+                saveToServer(false);
+            }
+        }, AUTOSAVE_INTERVAL);
+
+        window.addEventListener('beforeunload', (e) => {
+            if (hasUnsavedChanges) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
 
   });
 })();

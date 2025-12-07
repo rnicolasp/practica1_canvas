@@ -10,8 +10,11 @@
 <div class="page-wrapper">
     <div class="card">
         <div style="display:flex; justify-content:flex-end; gap:8px; align-items:center;">
+            <a th:if="${isOwner}" th:href="@{/editor(id=${loadId})}">
+                <button style="background-color:#007bff; color:white; font-weight:bold;">Editar</button></a>
             <a th:href="@{/home}"><button>Home</button></a>
             <a th:href="@{/profile}"><button>Mi Perfil</button></a>
+
         </div>
         <hr>
         <h2 class="center"><span th:text="${canvasName}">n.canvas</span>, por <span th:text="${ownerName}">Usuario</span></h2>
